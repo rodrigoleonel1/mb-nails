@@ -1,20 +1,36 @@
+import Loader from "@/components/ui/loader";
 import OrderForm from "./components/order-form";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-async function getTypes() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/types`);
-  const data = response.json();
-  return data;
-}
+export default function OrderPage() {
+  const [types, setTypes] = useState([]);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-async function getItems() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/items`);
-  const data = response.json();
-  return data;
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseTypes = await axios.get(
+          `${process.env.NEXT_PUBLIC_URL}/api/types`
+        );
+        setTypes(responseTypes.data);
+        const responseItems = await axios.get(
+          `${process.env.NEXT_PUBLIC_URL}/api/items`
+        );
+        setItems(responseItems.data)
+      } catch (error) {
+        console.error("Error al realizar la solicitud:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default async function OrderPage() {
-  const types = await getTypes();
-  const items = await getItems();
+    fetchData();
+  }, []);
+
+  if (loading) return <Loader />;
+
 
   return <OrderForm types={types} items={items} />;
 }
