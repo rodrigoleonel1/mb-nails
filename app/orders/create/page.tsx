@@ -1,3 +1,5 @@
+"use client";
+
 import Loader from "@/components/ui/loader";
 import OrderForm from "./components/order-form";
 import axios from "axios";
@@ -18,7 +20,7 @@ export default function OrderPage() {
         const responseItems = await axios.get(
           `${process.env.NEXT_PUBLIC_URL}/api/items`
         );
-        setItems(responseItems.data)
+        setItems(responseItems.data);
       } catch (error) {
         console.error("Error al realizar la solicitud:", error);
       } finally {
@@ -30,7 +32,6 @@ export default function OrderPage() {
   }, []);
 
   if (loading) return <Loader />;
-
 
   return <OrderForm types={types} items={items} />;
 }
