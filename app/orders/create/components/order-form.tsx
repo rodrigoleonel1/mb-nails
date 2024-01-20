@@ -129,7 +129,7 @@ export default function OrderForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 p-6"
+        className="flex flex-col max-w-3xl mx-auto gap-4 p-6"
       >
         <h2 className="text-2xl font-bold tracking-tight">Tipo de uña</h2>
         <FormField
