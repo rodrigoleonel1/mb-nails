@@ -28,7 +28,7 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="flex justify-center place-items-center gap-2 bg-violet-400 py-4">
+    <header className="flex justify-center place-items-center gap-2 bg-violet-400 py-4 shadow mb-2">
       <nav
         className={
           "flex justify-between place-items-center w-full max-w-3xl px-6"
