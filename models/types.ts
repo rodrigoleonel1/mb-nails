@@ -3,8 +3,8 @@ import { Schema, Document, models, model } from "mongoose";
 export interface Type extends Document {
   name: string;
   price: number;
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const TypeSchema = new Schema<Type>(

@@ -44,23 +44,24 @@ export default function ItemsPage() {
           {items.map((item: Item) => (
             <article
               key={item._id}
-              className="font-medium flex flex-col gap-2 w-full bg-violet-400 p-4 rounded-md"
+              className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
             >
-              <p>
-                {item.name}: {formatter.format(item.price)}
-              </p>
-              <span>
-                Última actualización:
-                {item.updatedAt && (
-                  <span> {format(item.updatedAt, "dd/MM/yyyy")}</span>
-                )}
-              </span>
+              <div>
+                <p>
+                  {item.name}: {formatter.format(item.price)}
+                </p>
+                <span>
+                  Última actualización:
+                  {item.updatedAt && (
+                    <span> {format(item.updatedAt, "dd/MM/yyyy")}</span>
+                  )}
+                </span>
+              </div>
               <Link
                 href={`/prices/items/${item._id}`}
-                className="w-full flex justify-center bg-violet-600 gap-1 text-white rounded-md py-2"
+                className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
               >
                 <ClipboardPen />
-                Editar
               </Link>
             </article>
           ))}

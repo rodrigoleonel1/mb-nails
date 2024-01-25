@@ -4,7 +4,11 @@ import axios from "axios";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function DeleteButton({ id }: { id: string }) {
+interface DeleteButtonProps {
+  id: string;
+}
+
+export default function DeleteButton({ id }: DeleteButtonProps) {
   const router = useRouter();
 
   const onDelete = async () => {
@@ -17,7 +21,7 @@ export default function DeleteButton({ id }: { id: string }) {
   };
 
   return (
-    <div className="bg-violet-700 text-white p-2 rounded-md hover:bg-violet-600 cursor-pointer">
+    <div className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer">
       <Trash onClick={onDelete} />
     </div>
   );

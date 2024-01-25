@@ -28,55 +28,59 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <>
-      <header className="flex justify-center place-items-center gap-2 bg-violet-400 py-4">
-        <nav
-          className={
-            "flex justify-between place-items-center w-full max-w-3xl px-6"
-          }
-        >
-          <Link href={"/"}>
-            <h1
-              className={`text-3xl font-bold flex place-items-center ${dancingScript.className}`}
-            >
-              MarianaNails
-              <Sparkles className="w-5" />
-            </h1>
-          </Link>
-          <div className="hidden space-x-2 md:flex">
-            <Link
-              href={"/"}
-              className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-            >
-              Inicio
-            </Link>
-            <Link
-              href={"/orders/create"}
-              className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-            >
-              Crear orden
-            </Link>
-            <Link
-              href={"/prices"}
-              className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-            >
-              Editar precios
-            </Link>
-          </div>
-          <span
-            className={`md:hidden cursor-pointer transition-transform group: ${
-              menuOpen === false ? "rotate-0" : "rotate-90"
-            }`}
+    <header className="flex justify-center place-items-center gap-2 bg-violet-400 py-4">
+      <nav
+        className={
+          "flex justify-between place-items-center w-full max-w-3xl px-6"
+        }
+      >
+        <Link href={"/"}>
+          <h1
+            className={`text-3xl font-bold flex place-items-center ${dancingScript.className}`}
           >
-            {menuOpen ? (
-              <X size={28} onClick={handleClick} />
-            ) : (
-              <Menu size={28} onClick={handleClick} />
-            )}
-          </span>
-        </nav>
-        <MenuMobile menuOpen={menuOpen} handleClick={handleClick} />
-      </header>
-    </>
+            MarianaNails
+            <Sparkles className="w-5" />
+          </h1>
+        </Link>
+        <div className="hidden space-x-2 md:flex">
+          <Link
+            href={"/"}
+            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
+          >
+            Inicio
+          </Link>
+          <Link
+            href={"/orders"}
+            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
+          >
+            Mis ordenes
+          </Link>
+          <Link
+            href={"/orders/create"}
+            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
+          >
+            Crear orden
+          </Link>
+          <Link
+            href={"/prices"}
+            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
+          >
+            Editar precios
+          </Link>
+        </div>
+        <span
+          className={`md:hidden cursor-pointer transition-transform group: ${
+            menuOpen === false ? "rotate-0" : "rotate-90"
+          }`}
+        >
+          {menuOpen ? (
+            <X size={28} onClick={handleClick} />
+          ) : (
+            <Menu size={28} onClick={handleClick} />
+          )}
+        </span>
+      </nav>
+      <MenuMobile menuOpen={menuOpen} handleClick={handleClick} />
+    </header>
   );
 }

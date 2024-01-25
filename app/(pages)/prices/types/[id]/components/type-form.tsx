@@ -25,16 +25,15 @@ const formSchema = z.object({
 
 type TypeFormValues = z.infer<typeof formSchema>;
 
-export default function ItemForm({ item }: { item: Item }) {
+export function TypeForm({ type }: { type: Item }) {
   const router = useRouter();
-  console.log(item)
 
   const [loading, setLoading] = useState(false);
 
   const form = useForm<TypeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: item.price,
+      price: type.price,
     },
   });
 
@@ -42,11 +41,11 @@ export default function ItemForm({ item }: { item: Item }) {
     try {
       setLoading(true);
       await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/items/${item._id}`,
+        `${process.env.NEXT_PUBLIC_URL}/api/types/${type._id}`,
         formData
       );
       router.refresh();
-      router.push(`${process.env.NEXT_PUBLIC_URL}/prices/items`);
+      router.push(`${process.env.NEXT_PUBLIC_URL}/prices/types`);
     } catch (error: any) {
       console.log({ "CLIENT ERROR": error });
     } finally {

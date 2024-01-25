@@ -3,7 +3,7 @@
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ClipboardPen } from "lucide-react";
+import { ClipboardPen, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 
 import Loader from "@/components/ui/loader";
@@ -44,23 +44,24 @@ export default function TypesPage() {
           {types.map((type: Item) => (
             <article
               key={type.name}
-              className="font-medium flex flex-col gap-2 w-full bg-violet-400 p-4 rounded-md"
+              className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
             >
-              <p>
-                {type.name}: {formatter.format(type.price)}
-              </p>
-              <span>
-                Última actualización:
-                {type.updatedAt && (
-                  <span> {format(type.updatedAt, "dd/MM/yyyy")}</span>
-                )}
-              </span>
+              <div>
+                <p>
+                  {type.name}: {formatter.format(type.price)}
+                </p>
+                <span>
+                  Última actualización:
+                  {type.updatedAt && (
+                    <span> {format(type.updatedAt, "dd/MM/yyyy")}</span>
+                  )}
+                </span>
+              </div>
               <Link
                 href={`/prices/types/${type._id}`}
-                className="w-full flex justify-center bg-violet-600 gap-1 text-white rounded-md py-2"
+                className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
               >
                 <ClipboardPen />
-                Editar
               </Link>
             </article>
           ))}
