@@ -21,8 +21,8 @@ export default function DeleteButton({ id }: DeleteButtonProps) {
   };
 
   return (
-    <div className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer">
+    <button className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer">
       <Trash onClick={onDelete} />
-    </div>
+    </button>
   );
 }
