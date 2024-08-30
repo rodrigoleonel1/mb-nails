@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-6 p-6 bg-violet-300">
-      <article className="bg-violet-500 rounded-md p-4 flex justify-between place-items-center shadow">
+      <article className="bg-violet-400 rounded-md p-4 flex justify-between place-items-center shadow">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Mis ordenes</h2>
           <p className="text-sm">Ver listado de ordenes creadas.</p>
