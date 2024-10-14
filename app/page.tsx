@@ -40,18 +40,6 @@ export default function Home() {
           <ExternalLink />
         </Link>
       </article>
-      <article className="bg-violet-400 rounded-md p-4 flex justify-between place-items-center shadow">
-        <div>
-          <h2 className="text-xl font-bold tracking-tight">Editar precios</h2>
-          <p className="text-sm">Edita los precios de tus uñas.</p>
-        </div>
-        <Link
-          href={"/prices"}
-          className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
-        >
-          <ExternalLink />
-        </Link>
-      </article>
     </main>
   );
 }
