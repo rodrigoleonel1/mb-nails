@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import Loader from "@/components/ui/loader";
 import { formatter } from "@/lib/utils";
 import { Item } from "@/lib/types";
+import { TypeForm } from "./[id]/components/type-form";
 
 export default function TypesPage() {
   const [types, setTypes] = useState<Item[]>([]);
@@ -46,10 +47,11 @@ export default function TypesPage() {
               key={type.name}
               className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
             >
-              <div>
+              <div className="w-full">
                 <p>
-                  {type.name}: {formatter.format(type.price)}
+                  {type.name}: 
                 </p>
+                {type && <TypeForm type={type} />}
                 <span>
                   Última actualización:
                   {type.updatedAt && (
@@ -57,12 +59,6 @@ export default function TypesPage() {
                   )}
                 </span>
               </div>
-              <Link
-                href={`/prices/types/${type._id}`}
-                className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
-              >
-                <ClipboardPen />
-              </Link>
             </article>
           ))}
         </section>

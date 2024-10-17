@@ -26,8 +26,6 @@ const formSchema = z.object({
 type TypeFormValues = z.infer<typeof formSchema>;
 
 export function TypeForm({ type }: { type: Item }) {
-  const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
   const form = useForm<TypeFormValues>({
@@ -44,8 +42,6 @@ export function TypeForm({ type }: { type: Item }) {
         `${process.env.NEXT_PUBLIC_URL}/api/types/${type._id}`,
         formData
       );
-      router.refresh();
-      router.push(`${process.env.NEXT_PUBLIC_URL}/prices/types`);
     } catch (error: any) {
       console.log({ "CLIENT ERROR": error });
     } finally {
@@ -57,21 +53,22 @@ export function TypeForm({ type }: { type: Item }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 "
+        className="flex place-items-center gap-2 justify-center mb-2"
       >
         <FormField
           control={form.control}
           name="price"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Precio<span></span>
+            <FormItem className="flex place-items-center">
+              <FormLabel className="mt-2 text-md">
+                $
               </FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   disabled={loading}
                   placeholder="Cantidad de encapsuladas"
+                  className="text-md"
                   min={0}
                   {...field}
                 />
@@ -80,7 +77,7 @@ export function TypeForm({ type }: { type: Item }) {
             </FormItem>
           )}
         />
-        <Button disabled={loading} type="submit">
+        <Button className="mt-2" disabled={loading} type="submit">
           Actualizar
         </Button>
       </form>

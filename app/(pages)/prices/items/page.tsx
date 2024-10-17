@@ -9,8 +9,9 @@ import { Item } from "@/models/item";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "@/components/ui/loader";
+import { ItemForm } from "./[id]/components/item-form";
 
-export default function ItemsPage() {
+export default function ItemsPage({ params }: { params: { id: string } }) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,10 +47,8 @@ export default function ItemsPage() {
               key={item._id}
               className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
             >
-              <div>
-                <p>
-                  {item.name}: {formatter.format(item.price)}
-                </p>
+              <div className="w-full">
+                <p className="flex justify-center place-items-center gap-1">{item.name}:{item && <ItemForm item={item} />}</p>
                 <span>
                   Última actualización:
                   {item.updatedAt && (
@@ -57,12 +56,6 @@ export default function ItemsPage() {
                   )}
                 </span>
               </div>
-              <Link
-                href={`/prices/items/${item._id}`}
-                className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
-              >
-                <ClipboardPen />
-              </Link>
             </article>
           ))}
         </section>
