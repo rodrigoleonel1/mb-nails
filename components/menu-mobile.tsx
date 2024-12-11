@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ClipboardPen, PlusCircle, Home, NotebookText } from "lucide-react";
+import Navlinks from "./navlinks";
 import { MouseEventHandler } from "react";
 
 interface MenuMobileProps {
@@ -15,38 +14,7 @@ export default function MenuMobile({ menuOpen, handleClick }: MenuMobileProps) {
       } absolute h-[calc(100vh-68px)] mt-[68px] top-0 left-0 flex flex-col gap-4 bg-violet-400 transition-all overflow-hidden`}
     >
       <div className="space-y-2">
-        <Link
-          onClick={handleClick}
-          href={"/"}
-          className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-        >
-          <Home size={22} />
-          <span className="text-lg">Inicio</span>
-        </Link>
-        <Link
-          onClick={handleClick}
-          href={"/orders"}
-          className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-        >
-          <NotebookText size={22} />
-          <span className="text-lg">Mis ordenes</span>
-        </Link>
-        <Link
-          onClick={handleClick}
-          href={"/orders/create"}
-          className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-        >
-          <PlusCircle size={22} />
-          <span className="text-lg">Crear orden</span>
-        </Link>
-        <Link
-          onClick={handleClick}
-          href={"/prices"}
-          className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-        >
-          <ClipboardPen size={22} />
-          <span className="text-lg">Editar precios</span>
-        </Link>
+        <Navlinks menuOpen={menuOpen} handleClick={handleClick} />
       </div>
     </aside>
   );

@@ -39,7 +39,7 @@ export default function ItemsPage({ params }: { params: { id: string } }) {
       <section className="flex flex-col gap-6">
         <header>
           <h2 className="text-2xl font-bold tracking-tight">Mis items</h2>
-          <p className="text-sm">Listado de items creados.</p>
+          <p className="text-sm">Listado de extras y decoraciones creadas.</p>
         </header>
         <section className="flex flex-col gap-4">
           {items.map((item: Item) => (
@@ -48,7 +48,9 @@ export default function ItemsPage({ params }: { params: { id: string } }) {
               className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
             >
               <div className="w-full">
-                <p className="flex justify-center place-items-center gap-1">{item.name}:{item && <ItemForm item={item} />}</p>
+                <p className="flex justify-center place-items-center gap-1">
+                  {item.name}:{item && <ItemForm item={item} />}
+                </p>
                 <span>
                   Última actualización:
                   {item.updatedAt && (

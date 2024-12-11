@@ -1,15 +1,10 @@
 "use client";
 
-import { Dancing_Script } from "next/font/google";
-import { Sparkles, Menu, X } from "lucide-react";
-import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import MenuMobile from "./menu-mobile";
-
-const dancingScript = Dancing_Script({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-});
+import Navlinks from "./navlinks";
+import Logo from "./logo";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,43 +29,13 @@ export default function Header() {
           "flex justify-between place-items-center w-full max-w-3xl px-6"
         }
       >
-        <Link href={"/"}>
-          <h1
-            className={`text-3xl font-bold flex place-items-center ${dancingScript.className}`}
-          >
-            MarianaNails
-            <Sparkles className="w-5" />
-          </h1>
-        </Link>
+        <Logo />
         <div className="hidden space-x-2 md:flex">
-          <Link
-            href={"/"}
-            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-          >
-            Inicio
-          </Link>
-          <Link
-            href={"/orders"}
-            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-          >
-            Mis ordenes
-          </Link>
-          <Link
-            href={"/orders/create"}
-            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-          >
-            Crear orden
-          </Link>
-          <Link
-            href={"/prices"}
-            className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
-          >
-            Editar precios
-          </Link>
+          <Navlinks menuOpen={menuOpen} handleClick={handleClick} />
         </div>
         <span
           className={`md:hidden cursor-pointer transition-transform group: ${
-            menuOpen === false ? "rotate-0" : "rotate-90"
+            !menuOpen ? "rotate-0" : "rotate-90"
           }`}
         >
           {menuOpen ? (

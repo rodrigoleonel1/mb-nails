@@ -71,3 +71,26 @@ export const DECORATIONS = [
     price: 10,
   },
 ];
+
+export const navLinks = [
+  {
+    name: "Inicio",
+    route: "/",
+    icon: "Home",
+  },
+  {
+    name: "Mis ordenes",
+    route: "/orders",
+    icon: "NotebookText",
+  },
+  {
+    name: "Crear Orden",
+    route: "/orders/create",
+    icon: "PlusCircle",
+  },
+  {
+    name: "Editar precios",
+    route: "/prices",
+    icon: "ClipboardPen",
+  },
+];
