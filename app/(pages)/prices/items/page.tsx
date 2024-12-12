@@ -38,9 +38,9 @@ export default function ItemsPage({ params }: { params: { id: string } }) {
           title={"Mis items"}
           subtitle={"Listado de extras y decoraciones creadas."}
         />
-        <section className="flex flex-col gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map((item: Item) => (
-            <CardPrice item={item} key={item.name}/>
+            <CardPrice item={item} key={item.name} />
           ))}
         </section>
       </section>

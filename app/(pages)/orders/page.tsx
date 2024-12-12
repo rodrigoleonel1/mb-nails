@@ -3,12 +3,11 @@
 import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { ExternalLink } from "lucide-react";
 
 import Loader from "@/components/ui/loader";
-import { formatter } from "@/lib/utils";
-import { ExternalLink } from "lucide-react";
 import TitleHeader from "@/components/title-header";
+import CardOrder from "@/components/card-order";
 
 export default function Home() {
   const [orders, setOrders] = useState([]);
@@ -42,25 +41,7 @@ export default function Home() {
       {orders.length > 0 ? (
         <section className="flex flex-col gap-4">
           {orders.map((order: any) => (
-            <article
-              key={order._id}
-              className="font-medium flex justify-between place-items-center bg-violet-400 p-4 rounded-md shadow"
-            >
-              <div>
-                <p>
-                  {order.type.name}: {formatter.format(order.total)}
-                </p>
-                <span>
-                  Orden creada: {format(order.createdAt, "dd/MM/yyyy")}
-                </span>
-              </div>
-              <Link
-                href={`/orders/${order._id}`}
-                className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
-              >
-                <ExternalLink />
-              </Link>
-            </article>
+            <CardOrder key={order._id} order={order} />
           ))}
         </section>
       ) : (
@@ -70,7 +51,7 @@ export default function Home() {
             href={"/orders/create"}
             className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
           >
-            <ExternalLink />{" "}
+            <ExternalLink />
           </Link>
         </div>
       )}

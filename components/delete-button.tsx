@@ -6,15 +6,20 @@ import { useRouter } from "next/navigation";
 
 interface DeleteButtonProps {
   id: string;
+  refresh: boolean;
 }
 
-export default function DeleteButton({ id }: DeleteButtonProps) {
+export default function DeleteButton({ id, refresh }: DeleteButtonProps) {
   const router = useRouter();
 
   const onDelete = async () => {
     try {
       await axios.delete(`${process.env.NEXT_PUBLIC_URL}/api/orders/${id}`);
-      router.push(`/`);
+      if (refresh) {
+        window.location.reload();
+      } else {
+        router.push(`/orders`);
+      }
     } catch (error) {
       console.log(error);
     }

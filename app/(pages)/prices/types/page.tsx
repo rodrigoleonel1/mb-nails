@@ -38,9 +38,9 @@ export default function TypesPage() {
           title={"Mis uñas"}
           subtitle={"Listado de tipos de uña creados."}
         />
-        <section className="flex flex-col gap-4">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {types.map((type: Item) => (
-            <CardPrice item={type} key={type.name}/>
+            <CardPrice item={type} key={type.name} />
           ))}
         </section>
       </section>

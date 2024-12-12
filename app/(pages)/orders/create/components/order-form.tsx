@@ -33,8 +33,11 @@ const formSchema = z.object({
   encapsuladas: z.coerce.number().min(0),
   francesas: z.coerce.number().min(0),
   babyboomer: z.coerce.number().min(0),
+  aurora: z.coerce.number().min(0),
+  espejo: z.coerce.number().min(0),
   nailart: z.coerce.number().min(0),
   strass: z.coerce.number().min(0),
+  relieve: z.coerce.number().min(0),
 });
 
 type OrderFormValues = z.infer<typeof formSchema>;
@@ -57,8 +60,11 @@ export default function OrderForm({
       encapsuladas: 0,
       francesas: 0,
       babyboomer: 0,
+      aurora: 0,
+      espejo: 0,
       nailart: 0,
       strass: 0,
+      relieve: 0,
     },
   });
 
@@ -232,6 +238,48 @@ export default function OrderForm({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="aurora"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="w-full flex justify-between">
+                Efecto Aurora<span>{formatter.format(items[5].price)}</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  disabled={loading}
+                  min={0}
+                  placeholder="Cantidad de efecto aurora"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="espejo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="w-full flex justify-between">
+                Efecto Espejo<span>{formatter.format(items[7].price)}</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  disabled={loading}
+                  min={0}
+                  placeholder="Cantidad de efecto espejo"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <h2 className="text-2xl font-bold tracking-tight">Decoraciones</h2>
         <FormField
           control={form.control}
@@ -268,6 +316,27 @@ export default function OrderForm({
                   disabled={loading}
                   min={0}
                   placeholder="Cantidad de strass"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="relieve"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="w-full flex justify-between">
+                Efecto 3D<span>{formatter.format(items[6].price)}</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  disabled={loading}
+                  min={0}
+                  placeholder="Cantidad de 3D"
                   {...field}
                 />
               </FormControl>

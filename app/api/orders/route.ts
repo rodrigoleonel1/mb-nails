@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
-import { redirect } from "next/navigation";
+import { revalidateTag } from "next/cache";
 
 import { connectDB } from "@/lib/mongodb";
 import OrderModel from "@/models/order";
-import { revalidateTag } from "next/cache";
 
 export async function GET() {
   try {
     await connectDB();
-    const orders = await OrderModel.find();
+    const orders = await OrderModel.find().sort({ createdAt: -1 });;
 
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {

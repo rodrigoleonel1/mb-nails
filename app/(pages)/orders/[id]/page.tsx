@@ -3,8 +3,8 @@ import { Dancing_Script } from "next/font/google";
 import { format } from "date-fns";
 
 import { formatter } from "@/lib/utils";
-import DeleteButton from "@/components/delete-button";
 import { Item } from "@/lib/types";
+import DeleteButton from "@/components/delete-button";
 import ScreenshotButton from "@/components/screenshot-button";
 import TitleHeader from "@/components/title-header";
 
@@ -36,7 +36,7 @@ export default async function OrderPage({
         />
         <aside className="flex gap-4">
           <ScreenshotButton id={params.id} />
-          <DeleteButton id={params.id} />
+          <DeleteButton id={params.id} refresh={false} />
         </aside>
       </header>
 

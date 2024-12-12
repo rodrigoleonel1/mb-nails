@@ -12,8 +12,9 @@ export default function CardPrice({ item }: CardPriceProps) {
     <article className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow">
       <div className="w-full">
         <p className="flex justify-center place-items-center gap-1">
-          {item.name}:{item && <ItemForm item={item} />}
+          {item.name}
         </p>
+        <ItemForm item={item} />
         <span>
           Última actualización:
           {item.updatedAt && (

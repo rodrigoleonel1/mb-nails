@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { CircleDollarSignIcon } from "lucide-react";
 
 const formSchema = z.object({
   price: z.coerce.number().min(0),
@@ -53,14 +54,14 @@ export function ItemForm({ item }: { item: Item }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex place-items-center gap-2 justify-center mb-2"
+        className="flex place-items-center gap-4 justify-center mb-2"
       >
         <FormField
           control={form.control}
           name="price"
           render={({ field }) => (
             <FormItem className="flex place-items-center">
-              <FormLabel className="mt-2 text-md">
+              <FormLabel className="mt-2 font-normal text-2xl">
                 $
               </FormLabel>
               <FormControl>

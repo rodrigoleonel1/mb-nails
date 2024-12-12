@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json(items, { status: 200 });
   } catch (error) {
     console.log("[ITEMS_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
 
@@ -23,6 +23,6 @@ export async function POST(req: Request) {
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEMS_POST]", error);
-    return new NextResponse("Internal error", { status: 500 });
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
