@@ -2,11 +2,11 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 
 import Loader from "@/components/ui/loader";
 import { Item } from "@/lib/types";
-import { TypeForm } from "./[id]/components/type-form";
+import CardPrice from "@/components/card-price";
+import TitleHeader from "@/components/title-header";
 
 export default function TypesPage() {
   const [types, setTypes] = useState<Item[]>([]);
@@ -34,27 +34,13 @@ export default function TypesPage() {
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-10 p-6 bg-violet-300">
       <section className="flex flex-col gap-6">
-        <header>
-          <h2 className="text-2xl font-bold tracking-tight">Mis uñas</h2>
-          <p className="text-sm">Listado de tipos de uña creados.</p>
-        </header>
+        <TitleHeader
+          title={"Mis uñas"}
+          subtitle={"Listado de tipos de uña creados."}
+        />
         <section className="flex flex-col gap-4">
           {types.map((type: Item) => (
-            <article
-              key={type.name}
-              className="font-medium flex justify-between place-items-center gap-2 w-full bg-violet-400 p-4 rounded-md shadow"
-            >
-              <div className="w-full">
-                <p>{type.name}:</p>
-                {type && <TypeForm type={type} />}
-                <span>
-                  Última actualización:
-                  {type.updatedAt && (
-                    <span> {format(type.updatedAt, "dd/MM/yyyy")}</span>
-                  )}
-                </span>
-              </div>
-            </article>
+            <CardPrice item={type} />
           ))}
         </section>
       </section>

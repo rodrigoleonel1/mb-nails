@@ -6,6 +6,7 @@ import { formatter } from "@/lib/utils";
 import DeleteButton from "@/components/delete-button";
 import { Item } from "@/lib/types";
 import ScreenshotButton from "@/components/screenshot-button";
+import TitleHeader from "@/components/title-header";
 
 const dancingScript = Dancing_Script({
   weight: ["400", "700"],
@@ -29,12 +30,10 @@ export default async function OrderPage({
   return (
     <main className="flex flex-col p-6 gap-6 bg-violet-300 max-w-3xl mx-auto">
       <header className="flex justify-between place-items-center">
-        <aside>
-          <h2 className="text-2xl font-bold tracking-tight">Orden de uñas</h2>
-          <p className="text-sm">
-            Creada el {format(order.createdAt, "dd/MM/yyyy")}.
-          </p>
-        </aside>
+        <TitleHeader
+          title={"Orden de uñas"}
+          subtitle={`Creada el ${format(order.createdAt, "dd/MM/yyyy")}`}
+        />
         <aside className="flex gap-4">
           <ScreenshotButton id={params.id} />
           <DeleteButton id={params.id} />

@@ -94,3 +94,34 @@ export const navLinks = [
     icon: "ClipboardPen",
   },
 ];
+
+export const HomeCards = [
+  {
+    title: "Mis ordenes",
+    subtitle: "Ver listado de ordenes creadas.",
+    route: "/orders",
+  },
+  {
+    title: "Crear orden",
+    subtitle: "Accede al formulario para crear una orden.",
+    route: "/orders/create",
+  },
+  {
+    title: "Editar precios",
+    subtitle: "Edita los precios de tus uñas.",
+    route: "/prices",
+  },
+];
+
+export const PricesCards = [
+  {
+    title: "Tipos de uñas",
+    subtitle: "Listado de precios de tipo de uñas.",
+    route: "/prices/types",
+  },
+  {
+    title: "Extras y decoraciones",
+    subtitle: "Listado de precios de decoraciones y extras.",
+    route: "/prices/items",
+  },
+];

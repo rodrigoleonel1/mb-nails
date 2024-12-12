@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import Loader from "@/components/ui/loader";
 import { formatter } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
+import TitleHeader from "@/components/title-header";
 
 export default function Home() {
   const [orders, setOrders] = useState([]);
@@ -34,10 +35,10 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-6 p-6 bg-violet-300">
-      <header>
-        <h2 className="text-2xl font-bold tracking-tight">Mis ordenes</h2>
-        <p className="text-sm">Listado de ordenes creadas.</p>
-      </header>
+      <TitleHeader
+        title={"Mis ordenes"}
+        subtitle={"Listado de ordenes creadas."}
+      />
       {orders.length > 0 ? (
         <section className="flex flex-col gap-4">
           {orders.map((order: any) => (

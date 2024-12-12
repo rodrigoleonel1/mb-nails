@@ -5,8 +5,8 @@ export interface Item extends Document {
   price: number;
   quantity?: number;
   type: "decoracion" | "extra";
-  createdAt?: Date
-  updatedAt?: Date
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const ItemSchema = new Schema<Item>(
