@@ -40,7 +40,7 @@ export default function TypesPage() {
         />
         <section className="flex flex-col gap-4">
           {types.map((type: Item) => (
-            <CardPrice item={type} />
+            <CardPrice item={type} key={type.name}/>
           ))}
         </section>
       </section>

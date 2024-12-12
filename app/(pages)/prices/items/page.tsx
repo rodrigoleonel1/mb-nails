@@ -40,7 +40,7 @@ export default function ItemsPage({ params }: { params: { id: string } }) {
         />
         <section className="flex flex-col gap-4">
           {items.map((item: Item) => (
-            <CardPrice item={item} />
+            <CardPrice item={item} key={item.name}/>
           ))}
         </section>
       </section>
