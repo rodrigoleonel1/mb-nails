@@ -38,6 +38,7 @@ const formSchema = z.object({
   nailart: z.coerce.number().min(0),
   strass: z.coerce.number().min(0),
   relieve: z.coerce.number().min(0),
+  retirado: z.coerce.number().min(0),
 });
 
 type OrderFormValues = z.infer<typeof formSchema>;
@@ -65,6 +66,7 @@ export default function OrderForm({
       nailart: 0,
       strass: 0,
       relieve: 0,
+      retirado: 0,
     },
   });
 
@@ -273,6 +275,27 @@ export default function OrderForm({
                   disabled={loading}
                   min={0}
                   placeholder="Cantidad de efecto espejo"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="retirado"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="w-full flex justify-between">
+                Retirado<span>{formatter.format(items[8].price)}</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  disabled={loading}
+                  min={0}
+                  placeholder="Cantidad de retirado"
                   {...field}
                 />
               </FormControl>

@@ -12,6 +12,7 @@ export const formatter = new Intl.NumberFormat("es-AR", {
 
 export function getKey(key: string) {
   if (key == "Encapsuladas") return "encapsuladas";
+  if (key == "Retirado") return "retirado";
   if (key == "Francesas") return "francesas";
   if (key == "Babyboomer") return "babyboomer";
   if (key == "Nailart") return "nailart";
