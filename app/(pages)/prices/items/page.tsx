@@ -40,7 +40,7 @@ export default function ItemsPage({ params }: { params: { id: string } }) {
         />
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {items.map((item: Item) => (
-            <CardPrice item={item} key={item.name} />
+            <CardPrice item={item} key={item.name} isTypes={false} />
           ))}
         </section>
       </section>

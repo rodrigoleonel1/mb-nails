@@ -40,7 +40,7 @@ export default function TypesPage() {
         />
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {types.map((type: Item) => (
-            <CardPrice item={type} key={type.name} />
+            <CardPrice item={type} key={type.name} isTypes={true} />
           ))}
         </section>
       </section>

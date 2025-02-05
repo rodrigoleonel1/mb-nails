@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { CircleDollarSignIcon } from "lucide-react";
 
 const formSchema = z.object({
   price: z.coerce.number().min(0),
@@ -25,7 +24,12 @@ const formSchema = z.object({
 
 type TypeFormValues = z.infer<typeof formSchema>;
 
-export function ItemForm({ item }: { item: Item }) {
+interface ItemFormProps {
+  item: Item;
+  isTypes: boolean;
+}
+
+export function ItemForm({ item, isTypes }: ItemFormProps) {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<TypeFormValues>({
@@ -39,10 +43,17 @@ export function ItemForm({ item }: { item: Item }) {
   const onSubmit = async (formData: TypeFormValues) => {
     try {
       setLoading(true);
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/items/${item._id}`,
-        formData
-      );
+      if(!isTypes){
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_URL}/api/items/${item._id}`,
+          formData
+        );
+      } else {
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_URL}/api/types/${item._id}`,
+          formData
+        );
+      }
     } catch (error: any) {
       console.log({ "CLIENT ERROR": error });
     } finally {
