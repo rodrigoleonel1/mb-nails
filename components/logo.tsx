@@ -13,7 +13,7 @@ export default function Logo() {
       <h1
         className={`text-3xl font-bold flex place-items-center ${dancingScript.className}`}
       >
-        MarianaNails
+        MBNails
         <Sparkles className="w-5" />
       </h1>
     </Link>

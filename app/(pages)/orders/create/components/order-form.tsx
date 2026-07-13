@@ -2,7 +2,6 @@
 
 import * as z from "zod";
 
-import { Type } from "@/models/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,22 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Item } from "@/lib/types";
-import { formatter, getKey } from "@/lib/utils";
+import { Item, Type } from "@/lib/types";
+import { formatter } from "@/lib/utils";
 import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   type: z.string().min(1, { message: "Selecciona una opción." }),
-  encapsuladas: z.coerce.number().min(0),
-  francesas: z.coerce.number().min(0),
-  babyboomer: z.coerce.number().min(0),
-  aurora: z.coerce.number().min(0),
-  espejo: z.coerce.number().min(0),
-  nailart: z.coerce.number().min(0),
-  strass: z.coerce.number().min(0),
-  relieve: z.coerce.number().min(0),
-  retirado: z.coerce.number().min(0),
+  quantities: z.record(z.coerce.number().min(0)),
 });
 
 type OrderFormValues = z.infer<typeof formSchema>;
@@ -51,22 +42,20 @@ export default function OrderForm({
   items: Item[];
 }) {
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
+  const extras = items.filter((item) => item.type === "extra");
+  const decorations = items.filter((item) => item.type === "decoracion");
+
+  const defaultQuantities = items.reduce((acc, item) => {
+    acc[String(item._id)] = 0;
+    return acc;
+  }, {} as Record<string, number>);
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "",
-      encapsuladas: 0,
-      francesas: 0,
-      babyboomer: 0,
-      aurora: 0,
-      espejo: 0,
-      nailart: 0,
-      strass: 0,
-      relieve: 0,
-      retirado: 0,
+      quantities: defaultQuantities,
     },
   });
 
@@ -74,36 +63,27 @@ export default function OrderForm({
     try {
       setLoading(true);
       const prices: number[] = [];
-      const extras: Item[] = [];
-      const decorations: Item[] = [];
+      const extrasOrder: Item[] = [];
+      const decorationsOrder: Item[] = [];
 
-      const type = types.find((type) => type._id === formData.type);
-      type?.price && prices.push(type?.price);
+      const type = types.find((t) => String(t._id) === formData.type);
+      if (type?.price) prices.push(type.price);
 
-      items.map((item) => {
-        const key = getKey(item.name);
-        if (item.type == "extra") {
-          extras.push({
-            name: item.name,
-            price: item.price * formData[key],
-            type: item.type,
-            quantity: formData[key],
-          });
-          prices.push(item.price * formData[key]);
-        }
-      });
+      items.forEach((item) => {
+        const quantity = formData.quantities[String(item._id)] ?? 0;
+        if (!quantity) return;
 
-      items.map((item) => {
-        const key = getKey(item.name);
-        if (item.type == "decoracion") {
-          decorations.push({
-            name: item.name,
-            price: item.price * formData[key],
-            type: item.type,
-            quantity: formData[key],
-          });
-          prices.push(item.price * formData[key]);
-        }
+        const orderItem = {
+          name: item.name,
+          price: item.price * quantity,
+          type: item.type,
+          quantity,
+        };
+
+        if (item.type === "extra") extrasOrder.push(orderItem);
+        else decorationsOrder.push(orderItem);
+
+        prices.push(orderItem.price);
       });
 
       const totalPrice = prices.reduce(
@@ -113,8 +93,8 @@ export default function OrderForm({
 
       const order = {
         type,
-        extras,
-        decorations,
+        extras: extrasOrder,
+        decorations: decorationsOrder,
         total: totalPrice,
       };
 
@@ -164,8 +144,8 @@ export default function OrderForm({
                   {types.map((type) => (
                     <SelectItem
                       className="cursor-pointer"
-                      key={type._id}
-                      value={type._id}
+                      key={String(type._id)}
+                      value={String(type._id)}
                     >
                       {type.name} - {formatter.format(type.price)}
                     </SelectItem>
@@ -176,197 +156,65 @@ export default function OrderForm({
             </FormItem>
           )}
         />
-        <h2 className="text-2xl font-bold tracking-tight">Extras</h2>
-        <FormField
-          control={form.control}
-          name="encapsuladas"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Encapsuladas<span>{formatter.format(items[0].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  placeholder="Cantidad de encapsuladas"
-                  min={0}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="francesas"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Francesas<span>{formatter.format(items[1].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de francesas"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="babyboomer"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Babyboomer<span>{formatter.format(items[2].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de babyboomers"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="aurora"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Efecto Aurora<span>{formatter.format(items[5].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de efecto aurora"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="espejo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Efecto Espejo<span>{formatter.format(items[7].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de efecto espejo"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="retirado"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Retirado<span>{formatter.format(items[8].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de retirado"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <h2 className="text-2xl font-bold tracking-tight">Decoraciones</h2>
-        <FormField
-          control={form.control}
-          name="nailart"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Nailart<span>{formatter.format(items[3].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de nailart"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="strass"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Strass<span>{formatter.format(items[4].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de strass"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="relieve"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="w-full flex justify-between">
-                Efecto 3D<span>{formatter.format(items[6].price)}</span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  placeholder="Cantidad de 3D"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        {extras.length > 0 && (
+          <h2 className="text-2xl font-bold tracking-tight">Extras</h2>
+        )}
+        {extras.map((item) => (
+          <FormField
+            key={String(item._id)}
+            control={form.control}
+            name={`quantities.${String(item._id)}`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="w-full flex justify-between">
+                  {item.name}
+                  <span>{formatter.format(item.price)}</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    disabled={loading}
+                    min={0}
+                    placeholder={`Cantidad de ${item.name.toLowerCase()}`}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+
+        {decorations.length > 0 && (
+          <h2 className="text-2xl font-bold tracking-tight">Decoraciones</h2>
+        )}
+        {decorations.map((item) => (
+          <FormField
+            key={String(item._id)}
+            control={form.control}
+            name={`quantities.${String(item._id)}`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="w-full flex justify-between">
+                  {item.name}
+                  <span>{formatter.format(item.price)}</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    disabled={loading}
+                    min={0}
+                    placeholder={`Cantidad de ${item.name.toLowerCase()}`}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+
         <Button disabled={loading} className="w-full" type="submit">
           Crear orden
         </Button>

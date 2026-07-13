@@ -36,7 +36,7 @@ export default async function OrderPage({
         />
         <aside className="flex gap-4">
           <ScreenshotButton id={params.id} />
-          <DeleteButton id={params.id} refresh={false} />
+          <DeleteButton id={params.id} resource="orders" redirectTo="/orders" />
         </aside>
       </header>
 

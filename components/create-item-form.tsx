@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Item } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,36 +30,35 @@ const formSchema = z.object({
   type: z.enum(["decoracion", "extra"]),
 });
 
-type ItemFormValues = z.infer<typeof formSchema>;
+type CreateItemFormValues = z.infer<typeof formSchema>;
 
-interface ItemFormProps {
-  item: Item;
+interface CreateItemFormProps {
+  onCreated?: () => void;
 }
 
-export function ItemForm({ item }: ItemFormProps) {
+export function CreateItemForm({ onCreated }: CreateItemFormProps) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<ItemFormValues>({
+  const form = useForm<CreateItemFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: item.name,
-      price: item.price,
-      type: item.type,
+      name: "",
+      price: 0,
+      type: "extra",
     },
   });
 
-  const onSubmit = async (formData: ItemFormValues) => {
+  const onSubmit = async (formData: CreateItemFormValues) => {
     try {
       setLoading(true);
-      setSaved(false);
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/items/${item._id}`,
-        formData,
-      );
-      setSaved(true);
-    } catch (error: any) {
-      console.log({ "CLIENT ERROR": error });
+      setError(null);
+      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/items`, formData);
+      form.reset({ name: "", price: 0, type: formData.type });
+      onCreated?.();
+    } catch (err: any) {
+      console.log({ "CLIENT ERROR": err });
+      setError("No se pudo crear el item. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -70,16 +68,21 @@ export function ItemForm({ item }: ItemFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-2 md:items-end mb-2"
+        className="flex flex-wrap place-items-end gap-2 bg-violet-400 p-4 rounded-md shadow"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem className="flex-1 min-w-[160px]">
-              <FormLabel className="text-xs">Nombre</FormLabel>
+              <FormLabel className="text-xs">Nombre del item</FormLabel>
               <FormControl>
-                <Input disabled={loading} className="text-md" {...field} />
+                <Input
+                  disabled={loading}
+                  className="placeholder:text-white/70"
+                  placeholder="Ej: Efecto Aurora"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,13 +95,7 @@ export function ItemForm({ item }: ItemFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Precio</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  className="text-md"
-                  {...field}
-                />
+                <Input type="number" min={0} disabled={loading} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,8 +132,9 @@ export function ItemForm({ item }: ItemFormProps) {
           )}
         />
         <Button disabled={loading} type="submit">
-          {saved ? "Guardado ✓" : "Actualizar"}
+          {loading ? "Agregando..." : "Agregar item"}
         </Button>
+        {error && <p className="text-sm text-red-800 w-full">{error}</p>}
       </form>
     </Form>
   );

@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Type } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,31 +22,34 @@ const formSchema = z.object({
   price: z.coerce.number().min(0),
 });
 
-type TypeFormValues = z.infer<typeof formSchema>;
+type CreateTypeFormValues = z.infer<typeof formSchema>;
 
-export function TypeForm({ type }: { type: Type }) {
+interface CreateTypeFormProps {
+  onCreated?: () => void;
+}
+
+export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<TypeFormValues>({
+  const form = useForm<CreateTypeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: type.name,
-      price: type.price,
+      name: "",
+      price: 0,
     },
   });
 
-  const onSubmit = async (formData: TypeFormValues) => {
+  const onSubmit = async (formData: CreateTypeFormValues) => {
     try {
       setLoading(true);
-      setSaved(false);
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/types/${type._id}`,
-        formData,
-      );
-      setSaved(true);
-    } catch (error: any) {
-      console.log({ "CLIENT ERROR": error });
+      setError(null);
+      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/types`, formData);
+      form.reset({ name: "", price: 0 });
+      onCreated?.();
+    } catch (err: any) {
+      console.log({ "CLIENT ERROR": err });
+      setError("No se pudo crear el tipo. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -57,16 +59,21 @@ export function TypeForm({ type }: { type: Type }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-2 md:items-end mb-2"
+        className="flex flex-wrap place-items-end gap-2 bg-violet-400 p-4 rounded-md shadow"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="flex-1 min-w-[120px]">
-              <FormLabel className="text-xs">Nombre</FormLabel>
+            <FormItem className="flex-1 min-w-[160px]">
+              <FormLabel className="text-xs">Nombre del tipo</FormLabel>
               <FormControl>
-                <Input disabled={loading} className="text-md" {...field} />
+                <Input
+                  disabled={loading}
+                  className="placeholder:text-white/70"
+                  placeholder="Ej: Acrílicas Nº7"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -79,21 +86,16 @@ export function TypeForm({ type }: { type: Type }) {
             <FormItem>
               <FormLabel className="text-xs">Precio</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  className="text-md"
-                  min={0}
-                  {...field}
-                />
+                <Input type="number" min={0} disabled={loading} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button disabled={loading} type="submit">
-          {saved ? "Guardado ✓" : "Actualizar"}
+          {loading ? "Agregando..." : "Agregar tipo"}
         </Button>
+        {error && <p className="text-sm text-red-800 w-full">{error}</p>}
       </form>
     </Form>
   );

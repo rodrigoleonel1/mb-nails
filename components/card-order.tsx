@@ -26,7 +26,11 @@ export default function CardOrder({ order }: CardOrderProps) {
         >
           <ExternalLink />
         </Link>
-        <DeleteButton id={order._id.toString()} refresh={true} />
+        <DeleteButton
+          id={order._id.toString()}
+          resource="orders"
+          refresh={true}
+        />
       </div>
     </article>
   );

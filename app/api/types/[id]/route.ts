@@ -26,10 +26,25 @@ export async function PUT(
     const body = await req.json();
     const type = await TypeModel.findByIdAndUpdate({ _id: params.id }, body, {
       new: true,
+      runValidators: true,
     });
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
-    console.log("[TYPE_GET]", error);
+    console.log("[TYPE_PUT]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectDB();
+    const type = await TypeModel.findByIdAndDelete(params.id);
+    return NextResponse.json(type, { status: 200 });
+  } catch (error) {
+    console.log("[TYPE_DELETE]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

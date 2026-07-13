@@ -14,7 +14,11 @@ export const ItemSchema = new Schema<Item>(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number },
-    type: { type: String, required: true },
+    type: {
+      type: String,
+      required: true,
+      enum: ["decoracion", "extra"],
+    },
   },
   { timestamps: true }
 );
