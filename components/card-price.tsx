@@ -33,7 +33,9 @@ export default function CardPrice({
       )}
       <span className="text-xs">
         Última actualización:
-        {item.updatedAt && <span> {format(item.updatedAt, "dd/MM/yyyy")}</span>}
+        {item.updatedAt && (
+          <span> {format(new Date(item.updatedAt), "dd/MM/yyyy")}</span>
+        )}
       </span>
     </article>
   );

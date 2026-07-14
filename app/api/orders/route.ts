@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 
 import { connectDB } from "@/lib/mongodb";
 import OrderModel from "@/models/order";
@@ -7,7 +6,7 @@ import OrderModel from "@/models/order";
 export async function GET() {
   try {
     await connectDB();
-    const orders = await OrderModel.find().sort({ createdAt: -1 });;
+    const orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {
@@ -22,7 +21,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     const newOrder = new OrderModel(body);
     const order = await newOrder.save();
-    revalidateTag("orders");
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
     console.log("[ORDER_POST]", error);

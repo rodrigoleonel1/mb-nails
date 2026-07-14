@@ -24,7 +24,7 @@ export default function DeleteButton({
   const onDelete = async () => {
     try {
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_URL}/api/${resource}/${id}`
+        `${process.env.NEXT_PUBLIC_URL}/api/${resource}/${id}`,
       );
 
       if (onSuccess) {
@@ -33,7 +33,7 @@ export default function DeleteButton({
       }
 
       if (refresh) {
-        window.location.reload();
+        router.refresh();
       } else {
         router.push(redirectTo ?? `/${resource}`);
       }
@@ -48,7 +48,7 @@ export default function DeleteButton({
       onClick={onDelete}
       className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer"
     >
-      <Trash className="pointer-events-none" size={18} />
+      <Trash className="pointer-events-none" size={22} />
     </button>
   );
 }

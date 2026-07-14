@@ -19,6 +19,8 @@ const OrderSchema = new Schema<Order>(
   { timestamps: true }
 );
 
+OrderSchema.index({ createdAt: -1 });
+
 const OrderModel = models.Ticket || model("Ticket", OrderSchema);
 
 export default OrderModel;

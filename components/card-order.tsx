@@ -17,7 +17,9 @@ export default function CardOrder({ order }: CardOrderProps) {
         <p>
           {order.type.name}: {formatter.format(order.total)}
         </p>
-        <span>Orden creada: {format(order.createdAt, "dd/MM/yyyy")}</span>
+        <span>
+          Orden creada: {format(new Date(order.createdAt), "dd/MM/yyyy")}
+        </span>
       </div>
       <div className="flex gap-2 sm:gap-4">
         <Link

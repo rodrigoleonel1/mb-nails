@@ -5,11 +5,11 @@ import ItemModel from "@/models/item";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
-    const item = await ItemModel.findById(params.id);
+    const item = await ItemModel.findById(params.id).lean();
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_GET]", error);
@@ -19,7 +19,7 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
@@ -37,7 +37,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();

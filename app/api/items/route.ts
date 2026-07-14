@@ -6,7 +6,7 @@ import ItemModel from "@/models/item";
 export async function GET() {
   try {
     await connectDB();
-    const items = await ItemModel.find();
+    const items = await ItemModel.find().lean();
     return NextResponse.json(items, { status: 200 });
   } catch (error) {
     console.log("[ITEMS_GET]", error);

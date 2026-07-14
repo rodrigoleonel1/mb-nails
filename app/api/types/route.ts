@@ -6,7 +6,7 @@ import TypeModel from "@/models/types";
 export async function GET() {
   try {
     await connectDB();
-    const types = await TypeModel.find();
+    const types = await TypeModel.find().lean();
     return NextResponse.json(types, { status: 200 });
   } catch (error) {
     console.log("[TYPES_GET]", error);

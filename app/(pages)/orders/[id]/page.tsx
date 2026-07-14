@@ -1,9 +1,11 @@
-import axios from "axios";
 import { Dancing_Script } from "next/font/google";
 import { format } from "date-fns";
+import { notFound } from "next/navigation";
 
 import { formatter } from "@/lib/utils";
-import { Item } from "@/lib/types";
+import { Item, Order } from "@/lib/types";
+import { connectDB } from "@/lib/mongodb";
+import OrderModel from "@/models/order";
 import DeleteButton from "@/components/delete-button";
 import ScreenshotButton from "@/components/screenshot-button";
 import TitleHeader from "@/components/title-header";
@@ -14,11 +16,9 @@ const dancingScript = Dancing_Script({
 });
 
 async function getOrder(id: string) {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_URL}/api/orders/${id}`
-  );
-  const data = response.data;
-  return data;
+  await connectDB();
+  const order = await OrderModel.findById(id).lean<Order>();
+  return order;
 }
 
 export default async function OrderPage({
@@ -27,12 +27,14 @@ export default async function OrderPage({
   params: { id: string };
 }) {
   const order = await getOrder(params.id);
+  if (!order) notFound();
+
   return (
     <main className="flex flex-col p-6 gap-6 bg-violet-300 max-w-3xl mx-auto">
       <header className="flex justify-between place-items-center">
         <TitleHeader
           title={"Orden de uñas"}
-          subtitle={`Creada el ${format(order.createdAt, "dd/MM/yyyy")}`}
+          subtitle={`Creada el ${format(new Date(order.createdAt), "dd/MM/yyyy")}`}
         />
         <aside className="flex gap-4">
           <ScreenshotButton id={params.id} />

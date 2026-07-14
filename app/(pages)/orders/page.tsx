@@ -1,36 +1,18 @@
-"use client";
-
-import axios from "axios";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
-
-import Loader from "@/components/ui/loader";
+import { connectDB } from "@/lib/mongodb";
+import OrderModel from "@/models/order";
 import TitleHeader from "@/components/title-header";
 import CardOrder from "@/components/card-order";
 
-export default function Home() {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+async function getOrders() {
+  await connectDB();
+  const orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
+  return orders;
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_URL}/api/orders`
-        );
-        setOrders(response.data);
-      } catch (error) {
-        console.error("Error al realizar la solicitud:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <Loader />;
+export default async function Home() {
+  const orders = await getOrders();
 
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-6 p-6 bg-violet-300">
@@ -41,7 +23,7 @@ export default function Home() {
       {orders.length > 0 ? (
         <section className="flex flex-col gap-4">
           {orders.map((order: any) => (
-            <CardOrder key={order._id} order={order} />
+            <CardOrder key={String(order._id)} order={order} />
           ))}
         </section>
       ) : (

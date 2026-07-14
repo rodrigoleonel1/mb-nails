@@ -1,37 +1,19 @@
-"use client";
-
-import Loader from "@/components/ui/loader";
+import { connectDB } from "@/lib/mongodb";
+import TypeModel from "@/models/types";
+import ItemModel from "@/models/item";
 import OrderForm from "./components/order-form";
-import axios from "axios";
-import { useEffect, useState } from "react";
 
-export default function OrderPage() {
-  const [types, setTypes] = useState([]);
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default async function OrderPage() {
+  await connectDB();
+  const [types, items] = await Promise.all([
+    TypeModel.find().lean(),
+    ItemModel.find().lean(),
+  ]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseTypes = await axios.get(
-          `${process.env.NEXT_PUBLIC_URL}/api/types`
-        );
-        setTypes(responseTypes.data);
-        const responseItems = await axios.get(
-          `${process.env.NEXT_PUBLIC_URL}/api/items`
-        );
-        setItems(responseItems.data);
-      } catch (error) {
-        console.error("Error al realizar la solicitud:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <Loader />;
-
-  return <OrderForm types={types} items={items} />;
+  return (
+    <OrderForm
+      types={JSON.parse(JSON.stringify(types))}
+      items={JSON.parse(JSON.stringify(items))}
+    />
+  );
 }
