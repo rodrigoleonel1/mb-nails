@@ -12,10 +12,10 @@ export default function ScreenshotButton({ id }: ScreenshotButtonProps) {
     const element = document.getElementById(id);
     if (element) {
       html2canvas(element).then((canvas) => {
-        let image = canvas.toDataURL("/images");
+        const image = canvas.toDataURL("image/jpeg", 1.0);
         const a = document.createElement("a");
         a.href = image;
-        a.download = "captura.jpg";
+        a.download = "orden.jpg";
         a.click();
       });
     }
