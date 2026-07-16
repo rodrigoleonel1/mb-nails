@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 
 import { Item } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
 import CardPrice from "@/components/card-price";
 import TitleHeader from "@/components/title-header";
 import { CreateItemForm } from "@/components/create-item-form";
@@ -16,6 +17,7 @@ export default function ItemsPageClient({
   initialItems,
 }: ItemsPageClientProps) {
   const [items, setItems] = useState<Item[]>(initialItems);
+  const toast = useToast();
 
   const fetchData = useCallback(async () => {
     try {
@@ -23,8 +25,9 @@ export default function ItemsPageClient({
       setItems(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
+      toast.error("No se pudo actualizar el listado de items.");
     }
-  }, []);
+  }, [toast]);
 
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-10 p-6 bg-violet-300">

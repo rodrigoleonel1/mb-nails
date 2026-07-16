@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 
 import Header from "@/components/header";
+import { ToastProvider } from "@/hooks/use-toast";
 
 // @ts-ignore
 import "./globals.css";
@@ -23,11 +24,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`bg-violet-300 overflow-x-hidden ${poppins.className}`}
-      >
-        <Header />
-        {children}
+      <body className={`bg-violet-300 overflow-x-hidden ${poppins.className}`}>
+        <ToastProvider>
+          <Header />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

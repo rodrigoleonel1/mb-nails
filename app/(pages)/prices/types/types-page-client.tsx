@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import axios from "axios";
 
 import { Type } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
 import CardPrice from "@/components/card-price";
 import TitleHeader from "@/components/title-header";
 import { CreateTypeForm } from "@/components/create-type-form";
@@ -16,6 +17,7 @@ export default function TypesPageClient({
   initialTypes,
 }: TypesPageClientProps) {
   const [types, setTypes] = useState<Type[]>(initialTypes);
+  const toast = useToast();
 
   const fetchData = useCallback(async () => {
     try {
@@ -23,8 +25,9 @@ export default function TypesPageClient({
       setTypes(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
+      toast.error("No se pudo actualizar el listado de tipos.");
     }
-  }, []);
+  }, [toast]);
 
   return (
     <main className="mx-auto max-w-3xl flex flex-col gap-10 p-6 bg-violet-300">

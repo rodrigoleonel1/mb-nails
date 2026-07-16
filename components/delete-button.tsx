@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { useToast } from "@/hooks/use-toast";
 
 interface DeleteButtonProps {
   id: string;
@@ -12,6 +15,12 @@ interface DeleteButtonProps {
   onSuccess?: () => void;
 }
 
+const RESOURCE_LABELS: Record<DeleteButtonProps["resource"], string> = {
+  orders: "La orden",
+  types: "El tipo",
+  items: "El item",
+};
+
 export default function DeleteButton({
   id,
   resource,
@@ -20,10 +29,14 @@ export default function DeleteButton({
   onSuccess,
 }: DeleteButtonProps) {
   const router = useRouter();
+  const toast = useToast();
+  const [deleting, setDeleting] = useState(false);
 
   const onDelete = async () => {
     try {
+      setDeleting(true);
       await axios.delete(`/api/${resource}/${id}`);
+      toast.success(`${RESOURCE_LABELS[resource]} se eliminó correctamente ✓`);
 
       if (onSuccess) {
         onSuccess();
@@ -37,6 +50,9 @@ export default function DeleteButton({
       }
     } catch (error) {
       console.log(error);
+      toast.error("No se pudo eliminar. Intenta de nuevo.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -44,7 +60,8 @@ export default function DeleteButton({
     <button
       type="button"
       onClick={onDelete}
-      className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer"
+      disabled={deleting}
+      className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
     >
       <Trash className="pointer-events-none" size={22} />
     </button>

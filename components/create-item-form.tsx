@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { AlertMessage } from "@/components/ui/alert-message";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -39,7 +39,7 @@ interface CreateItemFormProps {
 
 export function CreateItemForm({ onCreated }: CreateItemFormProps) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const form = useForm<CreateItemFormValues>({
     resolver: zodResolver(formSchema),
@@ -53,13 +53,13 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
   const onSubmit = async (formData: CreateItemFormValues) => {
     try {
       setLoading(true);
-      setError(null);
       await axios.post("/api/items", formData);
       form.reset({ name: "", price: 0, type: formData.type });
+      toast.success(`Item "${formData.name}" creado correctamente ✓`);
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      setError("No se pudo crear el item. Intenta de nuevo.");
+      toast.error("No se pudo crear el item. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,6 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
         <Button disabled={loading} type="submit">
           {loading ? "Agregando..." : "Agregar item"}
         </Button>
-        {error && <AlertMessage variant="error">{error}</AlertMessage>}
       </form>
     </Form>
   );

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { AlertMessage } from "@/components/ui/alert-message";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -31,7 +31,7 @@ interface CreateTypeFormProps {
 
 export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const form = useForm<CreateTypeFormValues>({
     resolver: zodResolver(formSchema),
@@ -44,13 +44,13 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
   const onSubmit = async (formData: CreateTypeFormValues) => {
     try {
       setLoading(true);
-      setError(null);
       await axios.post("/api/types", formData);
       form.reset({ name: "", price: 0 });
+      toast.success(`Tipo "${formData.name}" creado correctamente ✓`);
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      setError("No se pudo crear el tipo. Intenta de nuevo.");
+      toast.error("No se pudo crear el tipo. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -96,7 +96,6 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
         <Button disabled={loading} type="submit">
           {loading ? "Agregando..." : "Agregar tipo"}
         </Button>
-        {error && <AlertMessage variant="error">{error}</AlertMessage>}
       </form>
     </Form>
   );

@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Type } from "@/lib/types";
-import { useTimedFlag } from "@/hooks/use-timed-flag";
-import { AlertMessage } from "@/components/ui/alert-message";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,7 +28,7 @@ type TypeFormValues = z.infer<typeof formSchema>;
 
 export function TypeForm({ type }: { type: Type }) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useTimedFlag();
+  const toast = useToast();
 
   const form = useForm<TypeFormValues>({
     resolver: zodResolver(formSchema),
@@ -42,11 +41,11 @@ export function TypeForm({ type }: { type: Type }) {
   const onSubmit = async (formData: TypeFormValues) => {
     try {
       setLoading(true);
-      setSaved(false);
       await axios.put(`/api/types/${type._id}`, formData);
-      setSaved(true);
+      toast.success("Tipo actualizado ✓");
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
+      toast.error("No se pudo actualizar el tipo. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -93,9 +92,6 @@ export function TypeForm({ type }: { type: Type }) {
         <Button disabled={loading} type="submit">
           Actualizar
         </Button>
-        {saved && (
-          <AlertMessage variant="success">Tipo actualizado ✓</AlertMessage>
-        )}
       </form>
     </Form>
   );

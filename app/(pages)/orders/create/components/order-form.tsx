@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 
 import { Item, Type } from "@/lib/types";
 import { formatter } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -42,6 +43,7 @@ export default function OrderForm({
   items: Item[];
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
   const extras = items.filter((item) => item.type === "extra");
   const decorations = items.filter((item) => item.type === "decoracion");
@@ -114,10 +116,12 @@ export default function OrderForm({
       const response: AxiosResponse = await axios.post("/api/orders", order);
       const data = response.data;
 
+      toast.success("Orden creada correctamente ✓");
       router.refresh();
       router.push(`/orders/${data._id}`);
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
+      toast.error("No se pudo crear la orden. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }

@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Item } from "@/lib/types";
-import { useTimedFlag } from "@/hooks/use-timed-flag";
-import { AlertMessage } from "@/components/ui/alert-message";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -41,7 +40,7 @@ interface ItemFormProps {
 
 export function ItemForm({ item }: ItemFormProps) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useTimedFlag();
+  const toast = useToast();
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(formSchema),
@@ -55,11 +54,11 @@ export function ItemForm({ item }: ItemFormProps) {
   const onSubmit = async (formData: ItemFormValues) => {
     try {
       setLoading(true);
-      setSaved(false);
       await axios.put(`/api/items/${item._id}`, formData);
-      setSaved(true);
+      toast.success("Item actualizado ✓");
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
+      toast.error("No se pudo actualizar el item. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -136,9 +135,6 @@ export function ItemForm({ item }: ItemFormProps) {
         <Button disabled={loading} type="submit">
           Actualizar
         </Button>
-        {saved && (
-          <AlertMessage variant="success">Item actualizado ✓</AlertMessage>
-        )}
       </form>
     </Form>
   );
