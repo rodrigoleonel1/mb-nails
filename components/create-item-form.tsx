@@ -6,15 +6,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "@/components/ui/input";
+import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -23,6 +16,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
@@ -53,10 +54,10 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
     try {
       setLoading(true);
       setError(null);
-      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/items`, formData);
+      await axios.post("/api/items", formData);
       form.reset({ name: "", price: 0, type: formData.type });
       onCreated?.();
-    } catch (err: any) {
+    } catch (err) {
       console.log({ "CLIENT ERROR": err });
       setError("No se pudo crear el item. Intenta de nuevo.");
     } finally {
@@ -134,7 +135,7 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
         <Button disabled={loading} type="submit">
           {loading ? "Agregando..." : "Agregar item"}
         </Button>
-        {error && <p className="text-sm text-red-800 w-full">{error}</p>}
+        {error && <AlertMessage variant="error">{error}</AlertMessage>}
       </form>
     </Form>
   );

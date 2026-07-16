@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { format } from "date-fns";
-
-import { formatter } from "@/lib/utils";
 import { ExternalLink } from "lucide-react";
-import DeleteButton from "@/components/delete-button";
+
 import { Order } from "@/lib/types";
+import { formatter } from "@/lib/utils";
+import DeleteButton from "@/components/delete-button";
 
 interface CardOrderProps {
   order: Order;

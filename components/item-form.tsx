@@ -7,15 +7,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Item } from "@/lib/types";
-import { Input } from "@/components/ui/input";
+import { useTimedFlag } from "@/hooks/use-timed-flag";
+import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -24,6 +18,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
@@ -39,7 +41,7 @@ interface ItemFormProps {
 
 export function ItemForm({ item }: ItemFormProps) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useTimedFlag();
 
   const form = useForm<ItemFormValues>({
     resolver: zodResolver(formSchema),
@@ -54,12 +56,9 @@ export function ItemForm({ item }: ItemFormProps) {
     try {
       setLoading(true);
       setSaved(false);
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/items/${item._id}`,
-        formData,
-      );
+      await axios.put(`/api/items/${item._id}`, formData);
       setSaved(true);
-    } catch (error: any) {
+    } catch (error) {
       console.log({ "CLIENT ERROR": error });
     } finally {
       setLoading(false);
@@ -135,8 +134,11 @@ export function ItemForm({ item }: ItemFormProps) {
           )}
         />
         <Button disabled={loading} type="submit">
-          {saved ? "Guardado ✓" : "Actualizar"}
+          Actualizar
         </Button>
+        {saved && (
+          <AlertMessage variant="success">Item actualizado ✓</AlertMessage>
+        )}
       </form>
     </Form>
   );

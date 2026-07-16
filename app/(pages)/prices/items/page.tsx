@@ -1,10 +1,8 @@
-import { connectDB } from "@/lib/mongodb";
-import ItemModel from "@/models/item";
+import { getItems } from "@/services/items";
 import ItemsPageClient from "./items-page-client";
 
 export default async function ItemsPage() {
-  await connectDB();
-  const items = await ItemModel.find().lean();
+  const items = await getItems();
 
   return <ItemsPageClient initialItems={JSON.parse(JSON.stringify(items))} />;
 }

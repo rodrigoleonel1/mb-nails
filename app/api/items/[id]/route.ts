@@ -1,15 +1,12 @@
+import { deleteItem, getItemById, updateItem } from "@/services/items";
 import { NextResponse } from "next/server";
-
-import { connectDB } from "@/lib/mongodb";
-import ItemModel from "@/models/item";
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const item = await ItemModel.findById(params.id).lean();
+    const item = await getItemById(params.id);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_GET]", error);
@@ -22,12 +19,8 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
     const body = await req.json();
-    const item = await ItemModel.findByIdAndUpdate({ _id: params.id }, body, {
-      new: true,
-      runValidators: true,
-    });
+    const item = await updateItem(params.id, body);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_PUT]", error);
@@ -40,8 +33,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const item = await ItemModel.findByIdAndDelete(params.id);
+    const item = await deleteItem(params.id);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_DELETE]", error);

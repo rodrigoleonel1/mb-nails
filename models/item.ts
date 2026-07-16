@@ -1,15 +1,10 @@
-import { Schema, Document, models, model } from "mongoose";
+import { Document, Schema, model, models } from "mongoose";
 
-export interface Item extends Document {
-  name: string;
-  price: number;
-  quantity?: number;
-  type: "decoracion" | "extra";
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { Item } from "@/lib/types";
 
-export const ItemSchema = new Schema<Item>(
+export interface ItemDocument extends Omit<Item, "_id">, Document {}
+
+export const ItemSchema = new Schema<ItemDocument>(
   {
     name: { type: String, required: true },
     price: { type: Number, required: true },

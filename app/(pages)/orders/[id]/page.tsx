@@ -2,10 +2,9 @@ import { Dancing_Script } from "next/font/google";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 
+import { getOrderById } from "@/services/orders";
 import { formatter } from "@/lib/utils";
-import { Item, Order } from "@/lib/types";
-import { connectDB } from "@/lib/mongodb";
-import OrderModel from "@/models/order";
+import { Item } from "@/lib/types";
 import DeleteButton from "@/components/delete-button";
 import ScreenshotButton from "@/components/screenshot-button";
 import TitleHeader from "@/components/title-header";
@@ -15,18 +14,12 @@ const dancingScript = Dancing_Script({
   subsets: ["latin"],
 });
 
-async function getOrder(id: string) {
-  await connectDB();
-  const order = await OrderModel.findById(id).lean<Order>();
-  return order;
-}
-
 export default async function OrderPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const order = await getOrder(params.id);
+  const order = await getOrderById(params.id);
   if (!order) notFound();
 
   return (

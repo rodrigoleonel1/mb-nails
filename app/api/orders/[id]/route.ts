@@ -1,14 +1,12 @@
+import { deleteOrder, getOrderById } from "@/services/orders";
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import OrderModel from "@/models/order";
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const order = await OrderModel.findById(params.id).lean();
+    const order = await getOrderById(params.id);
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
     console.log("[ORDER_GET]", error);
@@ -21,11 +19,10 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const order = await OrderModel.findByIdAndDelete(params.id);
+    const order = await deleteOrder(params.id);
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
-    console.log("[ORDER_GET]", error);
+    console.log("[ORDER_DELETE]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

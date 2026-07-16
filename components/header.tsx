@@ -2,9 +2,10 @@
 
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import Logo from "./logo";
 import MenuMobile from "./menu-mobile";
 import Navlinks from "./navlinks";
-import Logo from "./logo";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);

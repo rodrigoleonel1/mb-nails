@@ -1,12 +1,13 @@
-import Link from "next/link";
-import { MouseEventHandler } from "react";
 import {
   ClipboardPen,
-  PlusCircle,
   Home,
-  NotebookText,
   LucideIcon,
+  NotebookText,
+  PlusCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { MouseEventHandler } from "react";
+
 import { navLinks } from "@/constants";
 
 type IconName = "Home" | "NotebookText" | "PlusCircle" | "ClipboardPen";

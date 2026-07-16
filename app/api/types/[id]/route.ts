@@ -1,15 +1,12 @@
+import { deleteType, getTypeById, updateType } from "@/services/types";
 import { NextResponse } from "next/server";
-
-import { connectDB } from "@/lib/mongodb";
-import TypeModel from "@/models/types";
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const type = await TypeModel.findById(params.id).lean();
+    const type = await getTypeById(params.id);
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_GET]", error);
@@ -22,12 +19,8 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
     const body = await req.json();
-    const type = await TypeModel.findByIdAndUpdate({ _id: params.id }, body, {
-      new: true,
-      runValidators: true,
-    });
+    const type = await updateType(params.id, body);
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_PUT]", error);
@@ -40,8 +33,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    await connectDB();
-    const type = await TypeModel.findByIdAndDelete(params.id);
+    const type = await deleteType(params.id);
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_DELETE]", error);

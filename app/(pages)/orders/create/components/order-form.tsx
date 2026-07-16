@@ -1,9 +1,15 @@
 "use client";
 
 import * as z from "zod";
-
+import axios, { AxiosResponse } from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
+import { Item, Type } from "@/lib/types";
+import { formatter } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,9 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -22,10 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Item, Type } from "@/lib/types";
-import { formatter } from "@/lib/utils";
-import axios, { AxiosResponse } from "axios";
-import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   type: z.string().min(1, { message: "Selecciona una opción." }),
@@ -46,10 +46,13 @@ export default function OrderForm({
   const extras = items.filter((item) => item.type === "extra");
   const decorations = items.filter((item) => item.type === "decoracion");
 
-  const defaultQuantities = items.reduce((acc, item) => {
-    acc[String(item._id)] = 0;
-    return acc;
-  }, {} as Record<string, number>);
+  const defaultQuantities = items.reduce(
+    (acc, item) => {
+      acc[String(item._id)] = 0;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(formSchema),
@@ -58,6 +61,16 @@ export default function OrderForm({
       quantities: defaultQuantities,
     },
   });
+
+  const watchType = form.watch("type");
+  const watchQuantities = form.watch("quantities");
+
+  const selectedType = types.find((t) => String(t._id) === watchType);
+  const itemsTotal = items.reduce((accumulator, item) => {
+    const quantity = Number(watchQuantities?.[String(item._id)]) || 0;
+    return accumulator + item.price * quantity;
+  }, 0);
+  const totalPreview = (selectedType?.price ?? 0) + itemsTotal;
 
   const onSubmit = async (formData: OrderFormValues) => {
     try {
@@ -88,7 +101,7 @@ export default function OrderForm({
 
       const totalPrice = prices.reduce(
         (accumulator, number) => accumulator + number,
-        0
+        0,
       );
 
       const order = {
@@ -98,15 +111,12 @@ export default function OrderForm({
         total: totalPrice,
       };
 
-      const response: AxiosResponse = await axios.post(
-        `${process.env.NEXT_PUBLIC_URL}/api/orders`,
-        order
-      );
+      const response: AxiosResponse = await axios.post("/api/orders", order);
       const data = response.data;
 
       router.refresh();
-      router.push(`${process.env.NEXT_PUBLIC_URL}/orders/${data._id}`);
-    } catch (error: any) {
+      router.push(`/orders/${data._id}`);
+    } catch (error) {
       console.log({ "CLIENT ERROR": error });
     } finally {
       setLoading(false);
@@ -214,6 +224,11 @@ export default function OrderForm({
             )}
           />
         ))}
+
+        <div className="flex justify-between place-items-center font-semibold text-lg bg-violet-400 rounded-md px-4 py-3">
+          <span>Total</span>
+          <span>{formatter.format(totalPreview)}</span>
+        </div>
 
         <Button disabled={loading} className="w-full" type="submit">
           Crear orden

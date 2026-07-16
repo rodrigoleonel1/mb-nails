@@ -1,5 +1,5 @@
-import { Dancing_Script } from "next/font/google";
 import { Sparkles } from "lucide-react";
+import { Dancing_Script } from "next/font/google";
 import Link from "next/link";
 
 const dancingScript = Dancing_Script({

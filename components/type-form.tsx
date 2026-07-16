@@ -7,7 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Type } from "@/lib/types";
-import { Input } from "@/components/ui/input";
+import { useTimedFlag } from "@/hooks/use-timed-flag";
+import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
@@ -27,7 +29,7 @@ type TypeFormValues = z.infer<typeof formSchema>;
 
 export function TypeForm({ type }: { type: Type }) {
   const [loading, setLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useTimedFlag();
 
   const form = useForm<TypeFormValues>({
     resolver: zodResolver(formSchema),
@@ -41,12 +43,9 @@ export function TypeForm({ type }: { type: Type }) {
     try {
       setLoading(true);
       setSaved(false);
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_URL}/api/types/${type._id}`,
-        formData,
-      );
+      await axios.put(`/api/types/${type._id}`, formData);
       setSaved(true);
-    } catch (error: any) {
+    } catch (error) {
       console.log({ "CLIENT ERROR": error });
     } finally {
       setLoading(false);
@@ -92,8 +91,11 @@ export function TypeForm({ type }: { type: Type }) {
           )}
         />
         <Button disabled={loading} type="submit">
-          {saved ? "Guardado ✓" : "Actualizar"}
+          Actualizar
         </Button>
+        {saved && (
+          <AlertMessage variant="success">Tipo actualizado ✓</AlertMessage>
+        )}
       </form>
     </Form>
   );

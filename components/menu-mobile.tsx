@@ -1,5 +1,6 @@
-import Navlinks from "./navlinks";
 import { MouseEventHandler } from "react";
+
+import Navlinks from "./navlinks";
 
 interface MenuMobileProps {
   menuOpen: boolean;

@@ -23,9 +23,7 @@ export default function DeleteButton({
 
   const onDelete = async () => {
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_URL}/api/${resource}/${id}`,
-      );
+      await axios.delete(`/api/${resource}/${id}`);
 
       if (onSuccess) {
         onSuccess();

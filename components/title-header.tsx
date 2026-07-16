@@ -1,6 +1,6 @@
 interface TitleProps {
-  title: String;
-  subtitle: String;
+  title: string;
+  subtitle: string;
 }
 
 export default function TitleHeader({ title, subtitle }: TitleProps) {

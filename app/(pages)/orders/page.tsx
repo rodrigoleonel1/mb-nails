@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { connectDB } from "@/lib/mongodb";
-import OrderModel from "@/models/order";
-import TitleHeader from "@/components/title-header";
-import CardOrder from "@/components/card-order";
 
-async function getOrders() {
-  await connectDB();
-  const orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
-  return orders;
-}
+import { getOrders } from "@/services/orders";
+import CardOrder from "@/components/card-order";
+import TitleHeader from "@/components/title-header";
 
 export default async function Home() {
   const orders = await getOrders();
@@ -22,7 +16,7 @@ export default async function Home() {
       />
       {orders.length > 0 ? (
         <section className="flex flex-col gap-4">
-          {orders.map((order: any) => (
+          {orders.map((order) => (
             <CardOrder key={String(order._id)} order={order} />
           ))}
         </section>

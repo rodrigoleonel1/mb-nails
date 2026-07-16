@@ -1,14 +1,9 @@
-import { connectDB } from "@/lib/mongodb";
-import TypeModel from "@/models/types";
-import ItemModel from "@/models/item";
+import { getItems } from "@/services/items";
+import { getTypes } from "@/services/types";
 import OrderForm from "./components/order-form";
 
 export default async function OrderPage() {
-  await connectDB();
-  const [types, items] = await Promise.all([
-    TypeModel.find().lean(),
-    ItemModel.find().lean(),
-  ]);
+  const [types, items] = await Promise.all([getTypes(), getItems()]);
 
   return (
     <OrderForm

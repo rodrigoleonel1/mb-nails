@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "@/components/ui/input";
+import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "El nombre es obligatorio." }),
@@ -44,10 +45,10 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
     try {
       setLoading(true);
       setError(null);
-      await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/types`, formData);
+      await axios.post("/api/types", formData);
       form.reset({ name: "", price: 0 });
       onCreated?.();
-    } catch (err: any) {
+    } catch (err) {
       console.log({ "CLIENT ERROR": err });
       setError("No se pudo crear el tipo. Intenta de nuevo.");
     } finally {
@@ -95,7 +96,7 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
         <Button disabled={loading} type="submit">
           {loading ? "Agregando..." : "Agregar tipo"}
         </Button>
-        {error && <p className="text-sm text-red-800 w-full">{error}</p>}
+        {error && <AlertMessage variant="error">{error}</AlertMessage>}
       </form>
     </Form>
   );

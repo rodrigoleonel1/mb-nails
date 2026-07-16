@@ -12,9 +12,6 @@ interface ItemsPageClientProps {
   initialItems: Item[];
 }
 
-// Receives data already fetched server-side (see page.tsx) so the first
-// render shows the real list instead of a loading spinner. It only talks to
-// the API again after a create/delete, to refresh the list with the new state.
 export default function ItemsPageClient({
   initialItems,
 }: ItemsPageClientProps) {
@@ -22,9 +19,7 @@ export default function ItemsPageClient({
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_URL}/api/items`,
-      );
+      const response = await axios.get("/api/items");
       setItems(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);

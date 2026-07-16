@@ -1,12 +1,9 @@
+import { createItem, getItems } from "@/services/items";
 import { NextResponse } from "next/server";
-
-import { connectDB } from "@/lib/mongodb";
-import ItemModel from "@/models/item";
 
 export async function GET() {
   try {
-    await connectDB();
-    const items = await ItemModel.find().lean();
+    const items = await getItems();
     return NextResponse.json(items, { status: 200 });
   } catch (error) {
     console.log("[ITEMS_GET]", error);
@@ -16,10 +13,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    await connectDB();
     const body = await req.json();
-    const newItem = new ItemModel(body);
-    const item = await newItem.save();
+    const item = await createItem(body);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEMS_POST]", error);

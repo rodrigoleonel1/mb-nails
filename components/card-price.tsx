@@ -1,9 +1,9 @@
 import { format } from "date-fns";
 
 import { Item, Type } from "@/lib/types";
+import DeleteButton from "./delete-button";
 import { ItemForm } from "./item-form";
 import { TypeForm } from "./type-form";
-import DeleteButton from "./delete-button";
 
 interface CardPriceProps {
   item: Item | Type;

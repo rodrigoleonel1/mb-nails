@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { DECORATIONS, EXTRAS, TYPES } from "@/constants";
 import { connectDB } from "@/lib/mongodb";
-import TypeModel from "@/models/types";
 import ItemModel from "@/models/item";
-import { TYPES, EXTRAS, DECORATIONS } from "@/constants";
+import TypeModel from "@/models/types";
 
 // Restaura el catálogo original de tipos e items (los que ya venían
 // definidos en constants.ts) SOLO si la colección correspondiente está
@@ -49,7 +49,7 @@ export async function POST() {
         skippedTypes: existingTypes > 0,
         skippedItems: existingItems > 0,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.log("[SEED_POST]", error);

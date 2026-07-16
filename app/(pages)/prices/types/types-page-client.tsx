@@ -19,9 +19,7 @@ export default function TypesPageClient({
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_URL}/api/types/`,
-      );
+      const response = await axios.get("/api/types");
       setTypes(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);

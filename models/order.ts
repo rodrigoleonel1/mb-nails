@@ -1,23 +1,21 @@
-import { Schema, Document, model, models } from "mongoose";
-import { Item, ItemSchema } from "./item";
-import { Type, TypeSchema } from "./types";
+import { Document, Schema, model, models } from "mongoose";
 
-export interface Order extends Document {
-  type: Type;
-  extras: Item[];
-  decorations: Item[];
-  total: number;
-}
+import { Order } from "@/lib/types";
+import { ItemSchema } from "./item";
+import { TypeSchema } from "./types";
 
-const OrderSchema = new Schema<Order>(
+export interface OrderDocument extends Omit<Order, "_id">, Document {}
+
+const OrderSchema = new Schema<OrderDocument>(
   {
     type: TypeSchema,
     extras: { type: [ItemSchema], default: [] },
     decorations: { type: [ItemSchema], default: [] },
     total: { type: Number, required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+
 
 OrderSchema.index({ createdAt: -1 });
 
