@@ -116,12 +116,12 @@ export default function OrderForm({
       const response: AxiosResponse = await axios.post("/api/orders", order);
       const data = response.data;
 
-      toast.success("Orden creada correctamente ✓");
+      toast.success("Orden creada correctamente");
       router.refresh();
       router.push(`/orders/${data._id}`);
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
-      toast.error("No se pudo crear la orden. Intenta de nuevo.");
+      toast.error("No se pudo crear la orden, intenta de nuevo");
     } finally {
       setLoading(false);
     }

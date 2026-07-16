@@ -36,7 +36,7 @@ export default function DeleteButton({
     try {
       setDeleting(true);
       await axios.delete(`/api/${resource}/${id}`);
-      toast.success(`${RESOURCE_LABELS[resource]} se eliminó correctamente ✓`);
+      toast.success(`${RESOURCE_LABELS[resource]} se eliminó correctamente`);
 
       if (onSuccess) {
         onSuccess();
@@ -50,7 +50,7 @@ export default function DeleteButton({
       }
     } catch (error) {
       console.log(error);
-      toast.error("No se pudo eliminar. Intenta de nuevo.");
+      toast.error("No se pudo eliminar, intenta de nuevo");
     } finally {
       setDeleting(false);
     }

@@ -46,11 +46,11 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
       setLoading(true);
       await axios.post("/api/types", formData);
       form.reset({ name: "", price: 0 });
-      toast.success(`Tipo "${formData.name}" creado correctamente ✓`);
+      toast.success(`Tipo "${formData.name}" creado correctamente`);
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      toast.error("No se pudo crear el tipo. Intenta de nuevo.");
+      toast.error("No se pudo crear el tipo, intenta de nuevo");
     } finally {
       setLoading(false);
     }

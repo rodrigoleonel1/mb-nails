@@ -55,11 +55,11 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
       setLoading(true);
       await axios.post("/api/items", formData);
       form.reset({ name: "", price: 0, type: formData.type });
-      toast.success(`Item "${formData.name}" creado correctamente ✓`);
+      toast.success(`Item "${formData.name}" creado correctamente`);
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      toast.error("No se pudo crear el item. Intenta de nuevo.");
+      toast.error("No se pudo crear el item, intenta de nuevo");
     } finally {
       setLoading(false);
     }

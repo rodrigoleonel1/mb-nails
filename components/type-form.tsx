@@ -42,10 +42,10 @@ export function TypeForm({ type }: { type: Type }) {
     try {
       setLoading(true);
       await axios.put(`/api/types/${type._id}`, formData);
-      toast.success("Tipo actualizado ✓");
+      toast.success("Tipo actualizado");
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
-      toast.error("No se pudo actualizar el tipo. Intenta de nuevo.");
+      toast.error("No se pudo actualizar el tipo, intenta de nuevo");
     } finally {
       setLoading(false);
     }

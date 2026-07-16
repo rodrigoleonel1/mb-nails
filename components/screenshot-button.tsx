@@ -15,7 +15,7 @@ export default function ScreenshotButton({ id }: ScreenshotButtonProps) {
   const takeScreenshot = () => {
     const element = document.getElementById(id);
     if (!element) {
-      toast.error("No se pudo generar la captura. Intenta de nuevo.");
+      toast.error("No se pudo generar la captura, intenta de nuevo");
       return;
     }
 
@@ -26,11 +26,11 @@ export default function ScreenshotButton({ id }: ScreenshotButtonProps) {
         a.href = image;
         a.download = "orden.jpg";
         a.click();
-        toast.success("Captura descargada ✓");
+        toast.success("Captura descargada");
       })
       .catch((error) => {
         console.log({ "CLIENT ERROR": error });
-        toast.error("No se pudo generar la captura. Intenta de nuevo.");
+        toast.error("No se pudo generar la captura, intenta de nuevo");
       });
   };
 

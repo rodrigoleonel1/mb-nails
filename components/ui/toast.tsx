@@ -63,8 +63,6 @@ export function Toast({
 
   const handleDismiss = () => setLeaving(true);
 
-  // Fallback por si el navegador no dispara onAnimationEnd
-  // (ej. "prefers-reduced-motion" o animaciones deshabilitadas).
   useEffect(() => {
     if (!leaving) return;
     const fallback = setTimeout(() => onDismiss(id), 250);

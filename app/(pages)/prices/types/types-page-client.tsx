@@ -25,7 +25,7 @@ export default function TypesPageClient({
       setTypes(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
-      toast.error("No se pudo actualizar el listado de tipos.");
+      toast.error("No se pudo actualizar el listado de tipos");
     }
   }, [toast]);
 

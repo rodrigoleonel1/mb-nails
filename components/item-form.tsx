@@ -55,10 +55,10 @@ export function ItemForm({ item }: ItemFormProps) {
     try {
       setLoading(true);
       await axios.put(`/api/items/${item._id}`, formData);
-      toast.success("Item actualizado ✓");
+      toast.success("Item actualizado");
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
-      toast.error("No se pudo actualizar el item. Intenta de nuevo.");
+      toast.error("No se pudo actualizar el item, intenta de nuevo");
     } finally {
       setLoading(false);
     }

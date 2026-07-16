@@ -18,7 +18,6 @@ export interface ToastOptions {
   title?: string;
   description: string;
   variant?: ToastVariant;
-  /** Duración en ms. Usa Infinity para que no se cierre solo. */
   duration?: number;
 }
 
@@ -110,7 +109,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      {/* Viewport: apilado y centrado abajo en mobile, esquina inferior derecha en desktop */}
       <div
         className="pointer-events-none fixed inset-x-0 bottom-0 z-[100] flex flex-col items-center gap-2 p-4 sm:inset-x-auto sm:right-0 sm:items-end"
         style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}

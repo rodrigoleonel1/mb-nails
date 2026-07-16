@@ -25,7 +25,7 @@ export default function ItemsPageClient({
       setItems(response.data);
     } catch (error) {
       console.error("Error al realizar la solicitud:", error);
-      toast.error("No se pudo actualizar el listado de items.");
+      toast.error("No se pudo actualizar el listado de items");
     }
   }, [toast]);
 
