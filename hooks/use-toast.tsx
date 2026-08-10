@@ -90,20 +90,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 
   const toast = useMemo(() => {
-    const fn = ((options: ToastOptions | string) => {
+    const base = (options: ToastOptions | string) => {
       push(typeof options === "string" ? { description: options } : options);
+    };
+
+    return Object.assign(base, {
+      success: (description: string, options?: ToastShorthandOptions) =>
+        push({ ...options, description, variant: "success" }),
+      error: (description: string, options?: ToastShorthandOptions) =>
+        push({ ...options, description, variant: "error" }),
+      info: (description: string, options?: ToastShorthandOptions) =>
+        push({ ...options, description, variant: "info" }),
+      warning: (description: string, options?: ToastShorthandOptions) =>
+        push({ ...options, description, variant: "warning" }),
     }) as ToastFn;
-
-    fn.success = (description, options) =>
-      push({ ...options, description, variant: "success" });
-    fn.error = (description, options) =>
-      push({ ...options, description, variant: "error" });
-    fn.info = (description, options) =>
-      push({ ...options, description, variant: "info" });
-    fn.warning = (description, options) =>
-      push({ ...options, description, variant: "warning" });
-
-    return fn;
   }, [push]);
 
   return (

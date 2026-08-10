@@ -23,7 +23,8 @@ const formSchema = z.object({
   price: z.coerce.number().min(0),
 });
 
-type CreateTypeFormValues = z.infer<typeof formSchema>;
+type CreateTypeFormInput = z.input<typeof formSchema>;
+type CreateTypeFormValues = z.output<typeof formSchema>;
 
 interface CreateTypeFormProps {
   onCreated?: () => void;
@@ -33,7 +34,7 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const form = useForm<CreateTypeFormValues>({
+  const form = useForm<CreateTypeFormInput, any, CreateTypeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -87,7 +88,13 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Precio</FormLabel>
               <FormControl>
-                <Input type="number" min={0} disabled={loading} {...field} />
+                <Input
+                  type="number"
+                  min={0}
+                  disabled={loading}
+                  {...field}
+                  value={field.value as number}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

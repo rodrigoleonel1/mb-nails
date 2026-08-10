@@ -31,7 +31,8 @@ const formSchema = z.object({
   type: z.enum(["decoracion", "extra"]),
 });
 
-type CreateItemFormValues = z.infer<typeof formSchema>;
+type CreateItemFormInput = z.input<typeof formSchema>;
+type CreateItemFormValues = z.output<typeof formSchema>;
 
 interface CreateItemFormProps {
   onCreated?: () => void;
@@ -41,7 +42,7 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const form = useForm<CreateItemFormValues>({
+  const form = useForm<CreateItemFormInput, any, CreateItemFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -96,7 +97,13 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Precio</FormLabel>
               <FormControl>
-                <Input type="number" min={0} disabled={loading} {...field} />
+                <Input
+                  type="number"
+                  min={0}
+                  disabled={loading}
+                  {...field}
+                  value={field.value as number}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

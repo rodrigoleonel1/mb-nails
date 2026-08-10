@@ -2,11 +2,12 @@ import { deleteOrder, getOrderById } from "@/services/orders";
 import { NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } },
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const order = await getOrderById(params.id);
+    const { id } = await params;
+    const order = await getOrderById(id);
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
     console.log("[ORDER_GET]", error);
@@ -15,11 +16,12 @@ export async function GET(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const order = await deleteOrder(params.id);
+    const { id } = await params;
+    const order = await deleteOrder(id);
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
     console.log("[ORDER_DELETE]", error);

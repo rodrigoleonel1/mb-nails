@@ -24,13 +24,14 @@ const formSchema = z.object({
   price: z.coerce.number().min(0),
 });
 
-type TypeFormValues = z.infer<typeof formSchema>;
+type TypeFormInput = z.input<typeof formSchema>;
+type TypeFormValues = z.output<typeof formSchema>;
 
 export function TypeForm({ type }: { type: Type }) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const form = useForm<TypeFormValues>({
+  const form = useForm<TypeFormInput, any, TypeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: type.name,
@@ -83,6 +84,7 @@ export function TypeForm({ type }: { type: Type }) {
                   className="text-md"
                   min={0}
                   {...field}
+                  value={field.value as number}
                 />
               </FormControl>
               <FormMessage />

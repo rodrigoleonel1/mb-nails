@@ -17,9 +17,10 @@ const dancingScript = Dancing_Script({
 export default async function OrderPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const order = await getOrderById(params.id);
+  const { id } = await params;
+  const order = await getOrderById(id);
   if (!order) notFound();
 
   return (
@@ -30,13 +31,13 @@ export default async function OrderPage({
           subtitle={`Creada el ${format(new Date(order.createdAt), "dd/MM/yyyy")}`}
         />
         <aside className="flex gap-4">
-          <ScreenshotButton id={params.id} />
-          <DeleteButton id={params.id} resource="orders" redirectTo="/orders" />
+          <ScreenshotButton id={id} />
+          <DeleteButton id={id} resource="orders" redirectTo="/orders" />
         </aside>
       </header>
 
       <section
-        id={params.id}
+        id={id}
         className="flex flex-col gap-4 bg-violet-400 py-6"
       >
         <article className="px-6 rounded-md bg-violet-400 flex flex-col gap-2">

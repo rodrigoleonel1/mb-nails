@@ -32,7 +32,8 @@ const formSchema = z.object({
   type: z.enum(["decoracion", "extra"]),
 });
 
-type ItemFormValues = z.infer<typeof formSchema>;
+type ItemFormInput = z.input<typeof formSchema>;
+type ItemFormValues = z.output<typeof formSchema>;
 
 interface ItemFormProps {
   item: Item;
@@ -42,7 +43,7 @@ export function ItemForm({ item }: ItemFormProps) {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const form = useForm<ItemFormValues>({
+  const form = useForm<ItemFormInput, any, ItemFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: item.name,
@@ -96,6 +97,7 @@ export function ItemForm({ item }: ItemFormProps) {
                   min={0}
                   className="text-md"
                   {...field}
+                  value={field.value as number}
                 />
               </FormControl>
               <FormMessage />

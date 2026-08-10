@@ -30,10 +30,11 @@ import {
 
 const formSchema = z.object({
   type: z.string().min(1, { message: "Selecciona una opción." }),
-  quantities: z.record(z.coerce.number().min(0)),
+  quantities: z.record(z.string(), z.coerce.number().min(0)),
 });
 
-type OrderFormValues = z.infer<typeof formSchema>;
+type OrderFormInput = z.input<typeof formSchema>;
+type OrderFormValues = z.output<typeof formSchema>;
 
 export default function OrderForm({
   items,
@@ -56,7 +57,7 @@ export default function OrderForm({
     {} as Record<string, number>,
   );
 
-  const form = useForm<OrderFormValues>({
+  const form = useForm<OrderFormInput, any, OrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       type: "",
@@ -192,6 +193,7 @@ export default function OrderForm({
                     min={0}
                     placeholder={`Cantidad de ${item.name.toLowerCase()}`}
                     {...field}
+                    value={field.value as number}
                   />
                 </FormControl>
                 <FormMessage />
@@ -221,6 +223,7 @@ export default function OrderForm({
                     min={0}
                     placeholder={`Cantidad de ${item.name.toLowerCase()}`}
                     {...field}
+                    value={field.value as number}
                   />
                 </FormControl>
                 <FormMessage />

@@ -2,11 +2,12 @@ import { deleteItem, getItemById, updateItem } from "@/services/items";
 import { NextResponse } from "next/server";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { id: string } },
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const item = await getItemById(params.id);
+    const { id } = await params;
+    const item = await getItemById(id);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_GET]", error);
@@ -16,11 +17,12 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
-    const item = await updateItem(params.id, body);
+    const item = await updateItem(id, body);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_PUT]", error);
@@ -29,11 +31,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const item = await deleteItem(params.id);
+    const { id } = await params;
+    const item = await deleteItem(id);
     return NextResponse.json(item, { status: 200 });
   } catch (error) {
     console.log("[ITEM_DELETE]", error);
