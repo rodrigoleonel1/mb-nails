@@ -36,10 +36,12 @@ export default function ScreenshotButton({ id }: ScreenshotButtonProps) {
 
   return (
     <button
+      type="button"
+      aria-label="Descargar captura de la orden"
       onClick={takeScreenshot}
       className="text-white bg-violet-600 p-2 rounded-md"
     >
-      <Download />
+      <Download aria-hidden="true" />
     </button>
   );
 }

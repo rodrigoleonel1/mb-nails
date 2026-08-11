@@ -1,5 +1,7 @@
 import { createItem, getItems } from "@/services/items";
 import { NextResponse } from "next/server";
+import { itemSchema } from "@/lib/validations";
+import { readJson, validationError } from "@/lib/server-errors";
 
 export async function GET() {
   try {
@@ -13,9 +15,14 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const item = await createItem(body);
-    return NextResponse.json(item, { status: 200 });
+    const json = await readJson(req);
+    if (!json.ok) return json.response;
+
+    const parsed = itemSchema.safeParse(json.body);
+    if (!parsed.success) return validationError(parsed.error);
+
+    const item = await createItem(parsed.data);
+    return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.log("[ITEMS_POST]", error);
     return new NextResponse("Internal Server Error", { status: 500 });

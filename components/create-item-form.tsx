@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { extractApiErrors } from "@/lib/client-errors";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +61,22 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      toast.error("No se pudo crear el item, intenta de nuevo");
+
+      const api = extractApiErrors(err);
+      const entries = Object.entries(api?.fields ?? {});
+
+      if (entries.length > 0) {
+        entries.forEach(([path, messages]) => {
+          form.setError(path as "name" | "price" | "type", {
+            type: "server",
+            message: messages[0],
+          });
+        });
+      } else {
+        toast.error(
+          api?.message ?? "No se pudo crear el item, intenta de nuevo",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -70,7 +86,7 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-wrap place-items-end gap-2 bg-violet-400 p-4 rounded-md shadow"
+        className="flex flex-col gap-2 md:flex-row md:items-start bg-violet-400 p-4 rounded-md shadow"
       >
         <FormField
           control={form.control}
@@ -81,7 +97,6 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
               <FormControl>
                 <Input
                   disabled={loading}
-                  className="placeholder:text-white/70"
                   placeholder="Ej: Efecto Aurora"
                   {...field}
                 />
@@ -116,6 +131,7 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Categoría</FormLabel>
               <Select
+                name="type"
                 disabled={loading}
                 onValueChange={field.onChange}
                 value={field.value}
@@ -139,9 +155,14 @@ export function CreateItemForm({ onCreated }: CreateItemFormProps) {
             </FormItem>
           )}
         />
-        <Button disabled={loading} type="submit">
-          {loading ? "Agregando..." : "Agregar item"}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <span aria-hidden="true" className="text-xs">
+            &nbsp;
+          </span>
+          <Button disabled={loading} type="submit">
+            {loading ? "Agregando..." : "Agregar item"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

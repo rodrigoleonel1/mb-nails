@@ -11,7 +11,15 @@ const OrderSchema = new Schema<OrderDocument>(
     type: TypeSchema,
     extras: { type: [ItemSchema], default: [] },
     decorations: { type: [ItemSchema], default: [] },
-    total: { type: Number, required: true },
+    total: {
+      type: Number,
+      required: true,
+      min: 0,
+      validate: {
+        validator: Number.isInteger,
+        message: "El total debe ser un número entero.",
+      },
+    },
   },
   { timestamps: true },
 );
@@ -19,6 +27,6 @@ const OrderSchema = new Schema<OrderDocument>(
 
 OrderSchema.index({ createdAt: -1 });
 
-const OrderModel = models.Ticket || model("Ticket", OrderSchema);
+const OrderModel = models.Order || model("Order", OrderSchema);
 
 export default OrderModel;

@@ -1,5 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/lib/types";
+import { computeOrderTotal, OrderInput } from "@/lib/validations";
 import OrderModel from "@/models/order";
 
 export async function getOrders() {
@@ -12,9 +13,9 @@ export async function getOrderById(id: string) {
   return OrderModel.findById(id).lean<Order>();
 }
 
-export async function createOrder(data: Partial<Order>) {
+export async function createOrder(data: OrderInput) {
   await connectDB();
-  const order = new OrderModel(data);
+  const order = new OrderModel({ ...data, total: computeOrderTotal(data) });
   return order.save();
 }
 

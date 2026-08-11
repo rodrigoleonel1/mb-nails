@@ -49,7 +49,7 @@ export default function Navlinks({ menuOpen, handleClick }: NavlinksProps) {
             href={link.route}
             className="p-2 rounded-md hover:bg-violet-300 flex place-items-center gap-1"
           >
-            <IconComponent size={22} />
+            <IconComponent size={22} aria-hidden="true" />
             <span className="text-lg">{link.name}</span>
           </Link>
         );

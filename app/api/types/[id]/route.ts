@@ -1,5 +1,7 @@
 import { deleteType, getTypeById, updateType } from "@/services/types";
 import { NextResponse } from "next/server";
+import { objectIdSchema, typeUpdateSchema } from "@/lib/validations";
+import { badRequest, notFound, readJson, validationError } from "@/lib/server-errors";
 
 export async function GET(
   _req: Request,
@@ -7,7 +9,13 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    if (!objectIdSchema.safeParse(id).success) {
+      return badRequest("El id del tipo no es válido.");
+    }
+
     const type = await getTypeById(id);
+    if (!type) return notFound("El tipo no existe.");
+
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_GET]", error);
@@ -21,8 +29,19 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await req.json();
-    const type = await updateType(id, body);
+    if (!objectIdSchema.safeParse(id).success) {
+      return badRequest("El id del tipo no es válido.");
+    }
+
+    const json = await readJson(req);
+    if (!json.ok) return json.response;
+
+    const parsed = typeUpdateSchema.safeParse(json.body);
+    if (!parsed.success) return validationError(parsed.error);
+
+    const type = await updateType(id, parsed.data);
+    if (!type) return notFound("El tipo no existe.");
+
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_PUT]", error);
@@ -36,7 +55,13 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    if (!objectIdSchema.safeParse(id).success) {
+      return badRequest("El id del tipo no es válido.");
+    }
+
     const type = await deleteType(id);
+    if (!type) return notFound("El tipo no existe.");
+
     return NextResponse.json(type, { status: 200 });
   } catch (error) {
     console.log("[TYPE_DELETE]", error);

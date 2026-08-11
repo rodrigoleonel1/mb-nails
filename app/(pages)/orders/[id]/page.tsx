@@ -59,7 +59,9 @@ export default async function OrderPage({
           {order.extras.map((item: Item) => (
             <p key={item.name} className="font-semibold flex justify-between">
               {item.name} x{item.quantity}
-              <span>{formatter.format(item.price)}</span>
+              <span>
+                {formatter.format(item.price * (item.quantity ?? 1))}
+              </span>
             </p>
           ))}
         </article>
@@ -73,7 +75,9 @@ export default async function OrderPage({
           {order.decorations.map((item: Item) => (
             <p key={item.name} className="font-semibold flex justify-between">
               {item.name} x{item.quantity}
-              <span>{formatter.format(item.price)}</span>
+              <span>
+                {formatter.format(item.price * (item.quantity ?? 1))}
+              </span>
             </p>
           ))}
         </article>

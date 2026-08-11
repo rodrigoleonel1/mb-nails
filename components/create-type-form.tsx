@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { extractApiErrors } from "@/lib/client-errors";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +52,22 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
       onCreated?.();
     } catch (err) {
       console.log({ "CLIENT ERROR": err });
-      toast.error("No se pudo crear el tipo, intenta de nuevo");
+
+      const api = extractApiErrors(err);
+      const entries = Object.entries(api?.fields ?? {});
+
+      if (entries.length > 0) {
+        entries.forEach(([path, messages]) => {
+          form.setError(path as "name" | "price", {
+            type: "server",
+            message: messages[0],
+          });
+        });
+      } else {
+        toast.error(
+          api?.message ?? "No se pudo crear el tipo, intenta de nuevo",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -72,7 +88,6 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
               <FormControl>
                 <Input
                   disabled={loading}
-                  className="placeholder:text-white/70"
                   placeholder="Ej: Acrílicas Nº7"
                   {...field}
                 />
@@ -100,9 +115,14 @@ export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
             </FormItem>
           )}
         />
-        <Button disabled={loading} type="submit">
-          {loading ? "Agregando..." : "Agregar tipo"}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <span aria-hidden="true" className="text-xs">
+            &nbsp;
+          </span>
+          <Button disabled={loading} type="submit">
+            {loading ? "Agregando..." : "Agregar tipo"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

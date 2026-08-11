@@ -16,9 +16,10 @@ export default function CardLink({ title, subtitle, route }: CardLinkProps) {
       </div>
       <Link
         href={route}
+        aria-label={`Ir a ${title}`}
         className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
       >
-        <ExternalLink />
+        <ExternalLink aria-hidden="true" />
       </Link>
     </article>
   );

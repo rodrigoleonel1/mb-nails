@@ -24,9 +24,10 @@ export default function CardOrder({ order }: CardOrderProps) {
       <div className="flex gap-2 sm:gap-4">
         <Link
           href={`/orders/${order._id}`}
+          aria-label="Ver orden"
           className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white"
         >
-          <ExternalLink />
+          <ExternalLink aria-hidden="true" />
         </Link>
         <DeleteButton
           id={order._id.toString()}

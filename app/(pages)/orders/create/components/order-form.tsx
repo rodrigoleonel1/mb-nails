@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
 import { Item, Type } from "@/lib/types";
+import { extractApiErrors } from "@/lib/client-errors";
 import { formatter } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -78,12 +79,10 @@ export default function OrderForm({
   const onSubmit = async (formData: OrderFormValues) => {
     try {
       setLoading(true);
-      const prices: number[] = [];
       const extrasOrder: Item[] = [];
       const decorationsOrder: Item[] = [];
 
       const type = types.find((t) => String(t._id) === formData.type);
-      if (type?.price) prices.push(type.price);
 
       items.forEach((item) => {
         const quantity = formData.quantities[String(item._id)] ?? 0;
@@ -91,27 +90,19 @@ export default function OrderForm({
 
         const orderItem = {
           name: item.name,
-          price: item.price * quantity,
+          price: item.price,
           type: item.type,
           quantity,
         };
 
         if (item.type === "extra") extrasOrder.push(orderItem);
         else decorationsOrder.push(orderItem);
-
-        prices.push(orderItem.price);
       });
-
-      const totalPrice = prices.reduce(
-        (accumulator, number) => accumulator + number,
-        0,
-      );
 
       const order = {
         type,
         extras: extrasOrder,
         decorations: decorationsOrder,
-        total: totalPrice,
       };
 
       const response: AxiosResponse = await axios.post("/api/orders", order);
@@ -122,7 +113,15 @@ export default function OrderForm({
       router.push(`/orders/${data._id}`);
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
-      toast.error("No se pudo crear la orden, intenta de nuevo");
+
+      const api = extractApiErrors(error);
+      const firstIssue = api ? Object.values(api.fields).flat()[0] : undefined;
+
+      toast.error(
+        firstIssue ??
+          api?.message ??
+          "No se pudo crear la orden, intenta de nuevo",
+      );
     } finally {
       setLoading(false);
     }
@@ -142,6 +141,7 @@ export default function OrderForm({
             <FormItem>
               <FormLabel>Tipo de uña</FormLabel>
               <Select
+                name="type"
                 disabled={loading}
                 onValueChange={field.onChange}
                 value={field.value}

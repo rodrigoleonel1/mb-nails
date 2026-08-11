@@ -14,7 +14,7 @@ export default function Logo() {
         className={`text-3xl font-bold flex place-items-center ${dancingScript.className}`}
       >
         MBNails
-        <Sparkles className="w-5" />
+        <Sparkles className="w-5" aria-hidden="true" />
       </h1>
     </Link>
   );

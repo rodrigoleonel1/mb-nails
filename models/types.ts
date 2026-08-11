@@ -6,7 +6,15 @@ export interface TypeDocument extends Omit<Type, "_id">, Document {}
 export const TypeSchema = new Schema<TypeDocument>(
   {
     name: { type: String, required: true },
-    price: { type: Number, required: true },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+      validate: {
+        validator: Number.isInteger,
+        message: "El precio debe ser un número entero.",
+      },
+    },
   },
   { timestamps: true }
 );

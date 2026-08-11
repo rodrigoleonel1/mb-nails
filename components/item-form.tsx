@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Item } from "@/lib/types";
+import { extractApiErrors } from "@/lib/client-errors";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,7 +60,22 @@ export function ItemForm({ item }: ItemFormProps) {
       toast.success("Item actualizado");
     } catch (error) {
       console.log({ "CLIENT ERROR": error });
-      toast.error("No se pudo actualizar el item, intenta de nuevo");
+
+      const api = extractApiErrors(error);
+      const entries = Object.entries(api?.fields ?? {});
+
+      if (entries.length > 0) {
+        entries.forEach(([path, messages]) => {
+          form.setError(path as "name" | "price" | "type", {
+            type: "server",
+            message: messages[0],
+          });
+        });
+      } else {
+        toast.error(
+          api?.message ?? "No se pudo actualizar el item, intenta de nuevo",
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -69,16 +85,16 @@ export function ItemForm({ item }: ItemFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-2 md:items-end mb-2"
+        className="flex flex-col md:flex-row gap-2 md:items-start mb-2"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="flex-1 min-w-[160px]">
+            <FormItem className="flex-1 min-w-40">
               <FormLabel className="text-xs">Nombre</FormLabel>
               <FormControl>
-                <Input disabled={loading} className="text-md" {...field} />
+                <Input disabled={loading} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,7 +111,6 @@ export function ItemForm({ item }: ItemFormProps) {
                   type="number"
                   disabled={loading}
                   min={0}
-                  className="text-md"
                   {...field}
                   value={field.value as number}
                 />
@@ -111,13 +126,14 @@ export function ItemForm({ item }: ItemFormProps) {
             <FormItem>
               <FormLabel className="text-xs">Categoría</FormLabel>
               <Select
+                name="type"
                 disabled={loading}
                 onValueChange={field.onChange}
                 value={field.value}
                 defaultValue={field.value}
               >
                 <FormControl>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-35">
                     <SelectValue />
                   </SelectTrigger>
                 </FormControl>
@@ -134,9 +150,14 @@ export function ItemForm({ item }: ItemFormProps) {
             </FormItem>
           )}
         />
-        <Button disabled={loading} type="submit">
-          Actualizar
-        </Button>
+        <div className="flex flex-col gap-2">
+          <span aria-hidden="true" className="text-xs">
+            &nbsp;
+          </span>
+          <Button disabled={loading} type="submit">
+            Actualizar
+          </Button>
+        </div>
       </form>
     </Form>
   );

@@ -34,17 +34,21 @@ export default function Header() {
         <div className="hidden space-x-2 md:flex">
           <Navlinks menuOpen={menuOpen} handleClick={handleClick} />
         </div>
-        <span
-          className={`md:hidden cursor-pointer transition-transform group: ${
+        <button
+          type="button"
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-expanded={menuOpen}
+          onClick={handleClick}
+          className={`md:hidden cursor-pointer p-2 transition-transform ${
             !menuOpen ? "rotate-0" : "rotate-90"
           }`}
         >
           {menuOpen ? (
-            <X size={28} onClick={handleClick} />
+            <X size={28} aria-hidden="true" />
           ) : (
-            <Menu size={28} onClick={handleClick} />
+            <Menu size={28} aria-hidden="true" />
           )}
-        </span>
+        </button>
       </nav>
       <MenuMobile menuOpen={menuOpen} handleClick={handleClick} />
     </header>

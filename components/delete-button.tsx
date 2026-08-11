@@ -16,9 +16,9 @@ interface DeleteButtonProps {
 }
 
 const RESOURCE_LABELS: Record<DeleteButtonProps["resource"], string> = {
-  orders: "La orden",
-  types: "El tipo",
-  items: "El item",
+  orders: "orden",
+  types: "tipo",
+  items: "item",
 };
 
 export default function DeleteButton({
@@ -36,7 +36,7 @@ export default function DeleteButton({
     try {
       setDeleting(true);
       await axios.delete(`/api/${resource}/${id}`);
-      toast.success(`${RESOURCE_LABELS[resource]} se eliminó correctamente`);
+      toast.success(`La ${RESOURCE_LABELS[resource]} se eliminó correctamente`);
 
       if (onSuccess) {
         onSuccess();
@@ -59,11 +59,12 @@ export default function DeleteButton({
   return (
     <button
       type="button"
+      aria-label={`Eliminar ${RESOURCE_LABELS[resource]}`}
       onClick={onDelete}
       disabled={deleting}
       className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      <Trash className="pointer-events-none" size={22} />
+      <Trash className="pointer-events-none" size={22} aria-hidden="true" />
     </button>
   );
 }

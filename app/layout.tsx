@@ -4,7 +4,6 @@ import { Poppins } from "next/font/google";
 import Header from "@/components/header";
 import { ToastProvider } from "@/hooks/use-toast";
 
-// @ts-ignore
 import "./globals.css";
 
 const poppins = Poppins({
@@ -23,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`bg-violet-300 overflow-x-hidden ${poppins.className}`}>
         <ToastProvider>
           <Header />
