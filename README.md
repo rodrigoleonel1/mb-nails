@@ -1,30 +1,73 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MB Nails
 
-## Getting Started
+Aplicación web para gestionar las órdenes de un salón de uñas: creación de órdenes, consulta del historial y edición de precios de tipos de uñas, extras y decoraciones.
 
-First, run the development server:
+## Stack
+
+- [Next.js 16](https://nextjs.org/) (App Router) + React 19 + TypeScript
+- [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [MongoDB](https://www.mongodb.com/) a través de [Mongoose](https://mongoosejs.com/)
+- [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/) para los formularios y validaciones
+- [date-fns](https://date-fns.org/), [axios](https://axios-http.com/), [html2canvas](https://html2canvas.hertzen.com/)
+
+## Requisitos
+
+- Node.js 20+ (la versión usada en desarrollo es 22+)
+- [pnpm](https://pnpm.io/)
+- Una instancia de MongoDB (local o Atlas) con la URI de conexión a mano
+
+## Setup
+
+1. Instalar dependencias:
+
+```bash
+pnpm install
+```
+
+2. Crear el archivo `.env` en la raíz del proyecto basándose en las variables requeridas:
+
+```
+MONGO_URI=mongodb://localhost:27017/mb-nails
+NEXT_PUBLIC_URL=http://localhost:3000
+```
+
+- `MONGO_URI`: URI de conexión a MongoDB (obligatoria; si falta, la app falla al arrancar).
+- `NEXT_PUBLIC_URL`: URL base de la app en desarrollo.
+
+3. Correr el servidor de desarrollo:
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrir [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Seed (datos iniciales)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+La base de datos arranca vacía. Para cargar el catálogo por defecto (tipos de uñas, extras y decoraciones definidos en `constants.ts`), ejecutar el endpoint de seed:
 
-## Learn More
+```bash
+curl -X POST http://localhost:3000/api/seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+El seed es idempotente: solo inserta si la colección correspondiente (types/items) está vacía. Nunca borra ni duplica datos.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Comandos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+| Comando            | Descripción                          |
+| ------------------ | ------------------------------------ |
+| `pnpm dev`         | Servidor de desarrollo               |
+| `pnpm build`       | Build de producción                  |
+| `pnpm start`       | Servir el build de producción        |
+| `pnpm lint`        | Lint con ESLint                      |
+| `pnpm typecheck`   | Chequeo de tipos con TypeScript      |
 
-## Deploy on Vercel
+## Estructura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `app/api/` — Route handlers (`types`, `items`, `orders`, `seed`).
+- `app/(pages)/` — Páginas de órdenes y precios.
+- `components/` — Componentes de UI.
+- `constants.ts` — Catálogo inicial de tipos, extras, decoraciones y precios.
+- `lib/` — Conexión a MongoDB, tipos, validaciones y utilidades.
+- `models/` — Modelos de Mongoose (`Type`, `Item`, `Order`).
+- `services/` — Capa de acceso a datos.
