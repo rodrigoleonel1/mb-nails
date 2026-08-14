@@ -7,11 +7,6 @@ export async function getItems() {
   return ItemModel.find().lean();
 }
 
-export async function getItemById(id: string) {
-  await connectDB();
-  return ItemModel.findById(id).lean();
-}
-
 export async function createItem(data: Partial<Item>) {
   await connectDB();
   const item = new ItemModel(data);

@@ -1,17 +1,7 @@
-import { createOrder, getOrders } from "@/services/orders";
+import { createOrder } from "@/services/orders";
 import { NextResponse } from "next/server";
 import { orderSchema } from "@/lib/validations";
 import { readJson, validationError } from "@/lib/server-errors";
-
-export async function GET() {
-  try {
-    const orders = await getOrders();
-    return NextResponse.json(orders, { status: 200 });
-  } catch (error) {
-    console.log("[ORDER_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
 
 export async function POST(req: Request) {
   try {

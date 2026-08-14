@@ -73,8 +73,4 @@ export function computeOrderTotal(data: OrderInput): number {
   return data.type.price + itemsTotal;
 }
 
-export type TypeInput = z.infer<typeof typeSchema>;
-export type TypeUpdateInput = z.infer<typeof typeUpdateSchema>;
-export type ItemInput = z.infer<typeof itemSchema>;
-export type ItemUpdateInput = z.infer<typeof itemUpdateSchema>;
 export type OrderInput = z.infer<typeof orderSchema>;

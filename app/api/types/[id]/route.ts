@@ -1,27 +1,7 @@
-import { deleteType, getTypeById, updateType } from "@/services/types";
+import { deleteType, updateType } from "@/services/types";
 import { NextResponse } from "next/server";
 import { objectIdSchema, typeUpdateSchema } from "@/lib/validations";
 import { badRequest, notFound, readJson, validationError } from "@/lib/server-errors";
-
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    if (!objectIdSchema.safeParse(id).success) {
-      return badRequest("El id del tipo no es válido.");
-    }
-
-    const type = await getTypeById(id);
-    if (!type) return notFound("El tipo no existe.");
-
-    return NextResponse.json(type, { status: 200 });
-  } catch (error) {
-    console.log("[TYPE_GET]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
 
 export async function PUT(
   req: Request,

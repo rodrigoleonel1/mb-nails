@@ -7,11 +7,6 @@ export async function getTypes() {
   return TypeModel.find().lean();
 }
 
-export async function getTypeById(id: string) {
-  await connectDB();
-  return TypeModel.findById(id).lean();
-}
-
 export async function createType(data: Partial<Type>) {
   await connectDB();
   const type = new TypeModel(data);
