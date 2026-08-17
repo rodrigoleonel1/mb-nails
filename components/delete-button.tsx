@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -9,21 +8,17 @@ import { useToast } from "@/hooks/use-toast";
 
 interface DeleteButtonProps {
   id: string;
-  resource: "orders" | "types" | "items";
+  action: (id: string) => Promise<void>;
+  label: string;
   refresh?: boolean;
   redirectTo?: string;
   onSuccess?: () => void;
 }
 
-const RESOURCE_LABELS: Record<DeleteButtonProps["resource"], string> = {
-  orders: "orden",
-  types: "tipo",
-  items: "item",
-};
-
 export default function DeleteButton({
   id,
-  resource,
+  action,
+  label,
   refresh = false,
   redirectTo,
   onSuccess,
@@ -35,8 +30,8 @@ export default function DeleteButton({
   const onDelete = async () => {
     try {
       setDeleting(true);
-      await axios.delete(`/api/${resource}/${id}`);
-      toast.success(`La ${RESOURCE_LABELS[resource]} se eliminó correctamente`);
+      await action(id);
+      toast.success(`La ${label} se eliminó correctamente`);
 
       if (onSuccess) {
         onSuccess();
@@ -46,7 +41,7 @@ export default function DeleteButton({
       if (refresh) {
         router.refresh();
       } else {
-        router.push(redirectTo ?? `/${resource}`);
+        router.push(redirectTo ?? "/");
       }
     } catch (error) {
       console.log(error);
@@ -59,7 +54,7 @@ export default function DeleteButton({
   return (
     <button
       type="button"
-      aria-label={`Eliminar ${RESOURCE_LABELS[resource]}`}
+      aria-label={`Eliminar ${label}`}
       onClick={onDelete}
       disabled={deleting}
       className="p-2 rounded-md bg-violet-600 hover:bg-violet-700 transition-all text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"

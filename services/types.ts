@@ -1,10 +1,25 @@
+import { cacheLife, cacheTag } from "next/cache";
+
 import { connectDB } from "@/lib/mongodb";
 import { Type } from "@/lib/types";
 import TypeModel from "@/models/types";
 
+function serialize<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
 export async function getTypes() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("types");
   await connectDB();
-  return TypeModel.find().lean();
+  const types = await TypeModel.find().lean();
+  return serialize(types);
+}
+
+export async function getTypeById(id: string) {
+  await connectDB();
+  return TypeModel.findById(id).lean();
 }
 
 export async function createType(data: Partial<Type>) {

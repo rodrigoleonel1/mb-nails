@@ -1,120 +1,85 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Type } from "@/lib/types";
-import { extractApiErrors } from "@/lib/client-errors";
+import { updateTypeAction, type ActionState } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "El nombre es obligatorio." }),
-  price: z.coerce.number().min(0),
-});
-
-type TypeFormInput = z.input<typeof formSchema>;
-type TypeFormValues = z.output<typeof formSchema>;
+const initialState: ActionState = { ok: false };
 
 export function TypeForm({ type }: { type: Type }) {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const toast = useToast();
+  const [state, formAction, pending] = useActionState(
+    updateTypeAction,
+    initialState,
+  );
 
-  const form = useForm<TypeFormInput, any, TypeFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: type.name,
-      price: type.price,
-    },
-  });
-
-  const onSubmit = async (formData: TypeFormValues) => {
-    try {
-      setLoading(true);
-      await axios.put(`/api/types/${type._id}`, formData);
+  useEffect(() => {
+    if (state.ok) {
       toast.success("Tipo actualizado");
-    } catch (error) {
-      console.log({ "CLIENT ERROR": error });
-
-      const api = extractApiErrors(error);
-      const entries = Object.entries(api?.fields ?? {});
-
-      if (entries.length > 0) {
-        entries.forEach(([path, messages]) => {
-          form.setError(path as "name" | "price", {
-            type: "server",
-            message: messages[0],
-          });
-        });
-      } else {
-        toast.error(
-          api?.message ?? "No se pudo actualizar el tipo, intenta de nuevo",
-        );
-      }
-    } finally {
-      setLoading(false);
+      router.refresh();
+    } else if (state.message) {
+      toast.error(state.message);
     }
-  };
+  }, [state, router, toast]);
+
+  const nameError = state.fields?.name?.[0];
+  const priceError = state.fields?.price?.[0];
+  const id = String(type._id);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-2 md:items-end mb-2"
-      >
-        <FormField
-          control={form.control}
+    <form
+      action={formAction}
+      className="flex flex-col md:flex-row gap-2 md:items-end mb-2"
+    >
+      <input type="hidden" name="id" value={id} />
+      <div className="flex-1 min-w-[120px] space-y-2">
+        <Label className="text-xs" htmlFor={`type-name-${id}`}>
+          Nombre
+        </Label>
+        <Input
+          id={`type-name-${id}`}
           name="name"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[120px]">
-              <FormLabel className="text-xs">Nombre</FormLabel>
-              <FormControl>
-                <Input disabled={loading} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          defaultValue={type.name}
+          disabled={pending}
+          aria-invalid={!!nameError}
         />
-        <FormField
-          control={form.control}
+        {nameError && (
+          <p className="text-sm font-medium text-destructive">{nameError}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label className="text-xs" htmlFor={`type-price-${id}`}>
+          Precio
+        </Label>
+        <Input
+          id={`type-price-${id}`}
           name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Precio</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  disabled={loading}
-                  min={0}
-                  {...field}
-                  value={field.value as number}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="number"
+          min={0}
+          defaultValue={type.price}
+          disabled={pending}
+          aria-invalid={!!priceError}
         />
-        <div className="flex flex-col gap-2">
-          <span aria-hidden="true" className="text-xs">
-            &nbsp;
-          </span>
-          <Button disabled={loading} type="submit">
-            Actualizar
-          </Button>
-        </div>
-      </form>
-    </Form>
+        {priceError && (
+          <p className="text-sm font-medium text-destructive">{priceError}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span aria-hidden="true" className="text-xs">
+          &nbsp;
+        </span>
+        <Button disabled={pending} type="submit">
+          {pending ? "Guardando..." : "Actualizar"}
+        </Button>
+      </div>
+    </form>
   );
 }

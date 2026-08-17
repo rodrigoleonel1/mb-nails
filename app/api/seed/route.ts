@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 import { DECORATIONS, EXTRAS, TYPES } from "@/constants";
 import { connectDB } from "@/lib/mongodb";
@@ -41,6 +42,9 @@ export async function POST() {
       const inserted = await ItemModel.insertMany(itemsToInsert);
       createdItems = inserted.length;
     }
+
+    if (createdTypes > 0) revalidateTag("types", "minutes");
+    if (createdItems > 0) revalidateTag("items", "minutes");
 
     return NextResponse.json(
       {

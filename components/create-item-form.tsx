@@ -1,169 +1,104 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 
-import { extractApiErrors } from "@/lib/client-errors";
+import { createItemAction, type ActionState } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "El nombre es obligatorio." }),
-  price: z.coerce.number().min(0),
-  type: z.enum(["decoracion", "extra"]),
-});
+const initialState: ActionState = { ok: false };
 
-type CreateItemFormInput = z.input<typeof formSchema>;
-type CreateItemFormValues = z.output<typeof formSchema>;
+const selectClassName =
+  "flex h-10 w-[140px] rounded-md border border-violet-800 bg-violet-500 px-3 py-2 text-sm text-white shadow-sm [&>option]:text-black cursor-pointer";
 
-interface CreateItemFormProps {
-  onCreated?: () => void;
-}
-
-export function CreateItemForm({ onCreated }: CreateItemFormProps) {
-  const [loading, setLoading] = useState(false);
+export function CreateItemForm() {
+  const router = useRouter();
   const toast = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction, pending] = useActionState(
+    createItemAction,
+    initialState,
+  );
 
-  const form = useForm<CreateItemFormInput, any, CreateItemFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      price: 0,
-      type: "extra",
-    },
-  });
+  useEffect(() => {
+    if (!state.ok) return;
+    formRef.current?.reset();
+    toast.success("Item creado correctamente");
+    router.refresh();
+  }, [state, router, toast]);
 
-  const onSubmit = async (formData: CreateItemFormValues) => {
-    try {
-      setLoading(true);
-      await axios.post("/api/items", formData);
-      form.reset({ name: "", price: 0, type: formData.type });
-      toast.success(`Item "${formData.name}" creado correctamente`);
-      onCreated?.();
-    } catch (err) {
-      console.log({ "CLIENT ERROR": err });
-
-      const api = extractApiErrors(err);
-      const entries = Object.entries(api?.fields ?? {});
-
-      if (entries.length > 0) {
-        entries.forEach(([path, messages]) => {
-          form.setError(path as "name" | "price" | "type", {
-            type: "server",
-            message: messages[0],
-          });
-        });
-      } else {
-        toast.error(
-          api?.message ?? "No se pudo crear el item, intenta de nuevo",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const nameError = state.fields?.name?.[0];
+  const priceError = state.fields?.price?.[0];
+  const typeError = state.fields?.type?.[0];
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-2 md:flex-row md:items-start bg-violet-400 p-4 rounded-md shadow"
-      >
-        <FormField
-          control={form.control}
+    <form
+      ref={formRef}
+      action={formAction}
+      className="flex flex-col gap-2 md:flex-row md:items-start bg-violet-400 p-4 rounded-md shadow"
+    >
+      <div className="flex-1 min-w-[160px] space-y-2">
+        <Label className="text-xs" htmlFor="item-name">
+          Nombre del item
+        </Label>
+        <Input
+          id="item-name"
           name="name"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[160px]">
-              <FormLabel className="text-xs">Nombre del item</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={loading}
-                  placeholder="Ej: Efecto Aurora"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          placeholder="Ej: Efecto Aurora"
+          disabled={pending}
+          aria-invalid={!!nameError}
         />
-        <FormField
-          control={form.control}
+        {nameError && (
+          <p className="text-sm font-medium text-destructive">{nameError}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label className="text-xs" htmlFor="item-price">
+          Precio
+        </Label>
+        <Input
+          id="item-price"
           name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Precio</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={0}
-                  disabled={loading}
-                  {...field}
-                  value={field.value as number}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="number"
+          min={0}
+          disabled={pending}
+          aria-invalid={!!priceError}
         />
-        <FormField
-          control={form.control}
+        {priceError && (
+          <p className="text-sm font-medium text-destructive">{priceError}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label className="text-xs" htmlFor="item-type">
+          Categoría
+        </Label>
+        <select
+          id="item-type"
           name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Categoría</FormLabel>
-              <Select
-                name="type"
-                disabled={loading}
-                onValueChange={field.onChange}
-                value={field.value}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem className="cursor-pointer" value="extra">
-                    Extra
-                  </SelectItem>
-                  <SelectItem className="cursor-pointer" value="decoracion">
-                    Decoración
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex flex-col gap-2">
-          <span aria-hidden="true" className="text-xs">
-            &nbsp;
-          </span>
-          <Button disabled={loading} type="submit">
-            {loading ? "Agregando..." : "Agregar item"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          defaultValue="extra"
+          disabled={pending}
+          aria-invalid={!!typeError}
+          className={selectClassName}
+        >
+          <option value="extra">Extra</option>
+          <option value="decoracion">Decoración</option>
+        </select>
+        {typeError && (
+          <p className="text-sm font-medium text-destructive">{typeError}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span aria-hidden="true" className="text-xs">
+          &nbsp;
+        </span>
+        <Button disabled={pending} type="submit">
+          {pending ? "Agregando..." : "Agregar item"}
+        </Button>
+      </div>
+    </form>
   );
 }

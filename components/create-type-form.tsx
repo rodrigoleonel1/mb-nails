@@ -1,129 +1,81 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 
-import { extractApiErrors } from "@/lib/client-errors";
+import { createTypeAction, type ActionState } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: "El nombre es obligatorio." }),
-  price: z.coerce.number().min(0),
-});
+const initialState: ActionState = { ok: false };
 
-type CreateTypeFormInput = z.input<typeof formSchema>;
-type CreateTypeFormValues = z.output<typeof formSchema>;
-
-interface CreateTypeFormProps {
-  onCreated?: () => void;
-}
-
-export function CreateTypeForm({ onCreated }: CreateTypeFormProps) {
-  const [loading, setLoading] = useState(false);
+export function CreateTypeForm() {
+  const router = useRouter();
   const toast = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction, pending] = useActionState(
+    createTypeAction,
+    initialState,
+  );
 
-  const form = useForm<CreateTypeFormInput, any, CreateTypeFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      price: 0,
-    },
-  });
+  useEffect(() => {
+    if (!state.ok) return;
+    formRef.current?.reset();
+    toast.success("Tipo creado correctamente");
+    router.refresh();
+  }, [state, router, toast]);
 
-  const onSubmit = async (formData: CreateTypeFormValues) => {
-    try {
-      setLoading(true);
-      await axios.post("/api/types", formData);
-      form.reset({ name: "", price: 0 });
-      toast.success(`Tipo "${formData.name}" creado correctamente`);
-      onCreated?.();
-    } catch (err) {
-      console.log({ "CLIENT ERROR": err });
-
-      const api = extractApiErrors(err);
-      const entries = Object.entries(api?.fields ?? {});
-
-      if (entries.length > 0) {
-        entries.forEach(([path, messages]) => {
-          form.setError(path as "name" | "price", {
-            type: "server",
-            message: messages[0],
-          });
-        });
-      } else {
-        toast.error(
-          api?.message ?? "No se pudo crear el tipo, intenta de nuevo",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const nameError = state.fields?.name?.[0];
+  const priceError = state.fields?.price?.[0];
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-wrap place-items-end gap-2 bg-violet-400 p-4 rounded-md shadow"
-      >
-        <FormField
-          control={form.control}
+    <form
+      ref={formRef}
+      action={formAction}
+      className="flex flex-wrap place-items-end gap-2 bg-violet-400 p-4 rounded-md shadow"
+    >
+      <div className="flex-1 min-w-[160px] space-y-2">
+        <Label className="text-xs" htmlFor="type-name">
+          Nombre del tipo
+        </Label>
+        <Input
+          id="type-name"
           name="name"
-          render={({ field }) => (
-            <FormItem className="flex-1 min-w-[160px]">
-              <FormLabel className="text-xs">Nombre del tipo</FormLabel>
-              <FormControl>
-                <Input
-                  disabled={loading}
-                  placeholder="Ej: Acrílicas Nº7"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          placeholder="Ej: Acrílicas Nº7"
+          disabled={pending}
+          aria-invalid={!!nameError}
         />
-        <FormField
-          control={form.control}
+        {nameError && (
+          <p className="text-sm font-medium text-destructive">{nameError}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label className="text-xs" htmlFor="type-price">
+          Precio
+        </Label>
+        <Input
+          id="type-price"
           name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs">Precio</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={0}
-                  disabled={loading}
-                  {...field}
-                  value={field.value as number}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="number"
+          min={0}
+          disabled={pending}
+          aria-invalid={!!priceError}
         />
-        <div className="flex flex-col gap-2">
-          <span aria-hidden="true" className="text-xs">
-            &nbsp;
-          </span>
-          <Button disabled={loading} type="submit">
-            {loading ? "Agregando..." : "Agregar tipo"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+        {priceError && (
+          <p className="text-sm font-medium text-destructive">{priceError}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span aria-hidden="true" className="text-xs">
+          &nbsp;
+        </span>
+        <Button disabled={pending} type="submit">
+          {pending ? "Agregando..." : "Agregar tipo"}
+        </Button>
+      </div>
+    </form>
   );
 }

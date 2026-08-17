@@ -7,8 +7,10 @@ Aplicación web para gestionar las órdenes de un salón de uñas: creación de 
 - [Next.js 16](https://nextjs.org/) (App Router) + React 19 + TypeScript
 - [Tailwind CSS v4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
 - [MongoDB](https://www.mongodb.com/) a través de [Mongoose](https://mongoosejs.com/)
-- [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/) para los formularios y validaciones
-- [date-fns](https://date-fns.org/), [axios](https://axios-http.com/), [html2canvas](https://html2canvas.hertzen.com/)
+- [zod](https://zod.dev/) para las validaciones
+- [date-fns](https://date-fns.org/), [html2canvas](https://html2canvas.hertzen.com/)
+
+Las páginas son Server Components (fetch directo a la base) y las mutaciones usan Server Actions con `useActionState`, `cacheLife` y `cacheTag`. No hay capa REST ni axios.
 
 ## Requisitos
 
@@ -64,10 +66,11 @@ El seed es idempotente: solo inserta si la colección correspondiente (types/ite
 
 ## Estructura
 
-- `app/api/` — Route handlers (`types`, `items`, `orders`, `seed`).
+- `app/actions.ts` — Server Actions (CRUD de órdenes, tipos e items).
+- `app/api/` — Route handler del seed (carga del catálogo inicial).
 - `app/(pages)/` — Páginas de órdenes y precios.
 - `components/` — Componentes de UI.
 - `constants.ts` — Catálogo inicial de tipos, extras, decoraciones y precios.
 - `lib/` — Conexión a MongoDB, tipos, validaciones y utilidades.
 - `models/` — Modelos de Mongoose (`Type`, `Item`, `Order`).
-- `services/` — Capa de acceso a datos.
+- `services/` — Capa de acceso a datos (con caché `use cache` + `cacheTag`).

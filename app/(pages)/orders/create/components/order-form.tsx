@@ -1,41 +1,21 @@
 "use client";
 
-import * as z from "zod";
-import axios, { AxiosResponse } from "axios";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Item, Type } from "@/lib/types";
-import { extractApiErrors } from "@/lib/client-errors";
+import { createOrderAction, type ActionState } from "@/app/actions";
 import { formatter } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-const formSchema = z.object({
-  type: z.string().min(1, { message: "Selecciona una opción." }),
-  quantities: z.record(z.string(), z.coerce.number().min(0)),
-});
+const initialState: ActionState = { ok: false };
 
-type OrderFormInput = z.input<typeof formSchema>;
-type OrderFormValues = z.output<typeof formSchema>;
+const selectClassName =
+  "flex h-10 w-full rounded-md border border-violet-800 bg-violet-500 px-3 py-2 text-sm text-white shadow-sm [&>option]:text-black cursor-pointer";
 
 export default function OrderForm({
   items,
@@ -46,201 +26,111 @@ export default function OrderForm({
 }) {
   const router = useRouter();
   const toast = useToast();
-  const [loading, setLoading] = useState(false);
-  const extras = items.filter((item) => item.type === "extra");
-  const decorations = items.filter((item) => item.type === "decoracion");
-
-  const defaultQuantities = items.reduce(
-    (acc, item) => {
-      acc[String(item._id)] = 0;
-      return acc;
-    },
-    {} as Record<string, number>,
+  const [state, formAction, pending] = useActionState(
+    createOrderAction,
+    initialState,
+  );
+  const [typeId, setTypeId] = useState("");
+  const [quantities, setQuantities] = useState<Record<string, number>>(() =>
+    Object.fromEntries(items.map((item) => [String(item._id), 0])),
   );
 
-  const form = useForm<OrderFormInput, any, OrderFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      type: "",
-      quantities: defaultQuantities,
-    },
-  });
+  useEffect(() => {
+    if (!state.ok) return;
+    toast.success("Orden creada correctamente");
+    router.push(`/orders/${state.orderId}`);
+  }, [state, router, toast]);
 
-  const watchType = form.watch("type");
-  const watchQuantities = form.watch("quantities");
-
-  const selectedType = types.find((t) => String(t._id) === watchType);
-  const itemsTotal = items.reduce((accumulator, item) => {
-    const quantity = Number(watchQuantities?.[String(item._id)]) || 0;
-    return accumulator + item.price * quantity;
-  }, 0);
+  const extras = items.filter((item) => item.type === "extra");
+  const decorations = items.filter((item) => item.type === "decoracion");
+  const selectedType = types.find((t) => String(t._id) === typeId);
+  const itemsTotal = items.reduce(
+    (acc, item) => acc + item.price * (quantities[String(item._id)] ?? 0),
+    0,
+  );
   const totalPreview = (selectedType?.price ?? 0) + itemsTotal;
+  const typeError = state.fields?.type?.[0];
 
-  const onSubmit = async (formData: OrderFormValues) => {
-    try {
-      setLoading(true);
-      const extrasOrder: Item[] = [];
-      const decorationsOrder: Item[] = [];
+  const renderQuantityField = (item: Item) => {
+    const id = String(item._id);
+    const error = state.fields?.[`quantities.${id}`]?.[0];
 
-      const type = types.find((t) => String(t._id) === formData.type);
-
-      items.forEach((item) => {
-        const quantity = formData.quantities[String(item._id)] ?? 0;
-        if (!quantity) return;
-
-        const orderItem = {
-          name: item.name,
-          price: item.price,
-          type: item.type,
-          quantity,
-        };
-
-        if (item.type === "extra") extrasOrder.push(orderItem);
-        else decorationsOrder.push(orderItem);
-      });
-
-      const order = {
-        type,
-        extras: extrasOrder,
-        decorations: decorationsOrder,
-      };
-
-      const response: AxiosResponse = await axios.post("/api/orders", order);
-      const data = response.data;
-
-      toast.success("Orden creada correctamente");
-      router.refresh();
-      router.push(`/orders/${data._id}`);
-    } catch (error) {
-      console.log({ "CLIENT ERROR": error });
-
-      const api = extractApiErrors(error);
-      const firstIssue = api ? Object.values(api.fields).flat()[0] : undefined;
-
-      toast.error(
-        firstIssue ??
-          api?.message ??
-          "No se pudo crear la orden, intenta de nuevo",
-      );
-    } finally {
-      setLoading(false);
-    }
+    return (
+      <div key={id} className="space-y-2">
+        <Label htmlFor={`qty-${id}`} className="w-full flex justify-between">
+          {item.name}
+          <span>{formatter.format(item.price)}</span>
+        </Label>
+        <Input
+          id={`qty-${id}`}
+          name={`quantities-${id}`}
+          type="number"
+          min={0}
+          value={quantities[id] ?? 0}
+          onChange={(e) =>
+            setQuantities((prev) => ({
+              ...prev,
+              [id]: Math.max(0, Number(e.target.value) || 0),
+            }))
+          }
+          disabled={pending}
+        />
+        {error && (
+          <p className="text-sm font-medium text-destructive">{error}</p>
+        )}
+      </div>
+    );
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col max-w-3xl mx-auto gap-4 p-6"
-      >
-        <h2 className="text-2xl font-bold tracking-tight">Tipo de uña</h2>
-        <FormField
-          control={form.control}
+    <form
+      action={formAction}
+      className="flex flex-col max-w-3xl mx-auto gap-4 p-6"
+    >
+      <h2 className="text-2xl font-bold tracking-tight">Tipo de uña</h2>
+      <div className="space-y-2">
+        <Label htmlFor="order-type">Tipo de uña</Label>
+        <select
+          id="order-type"
           name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tipo de uña</FormLabel>
-              <Select
-                name="type"
-                disabled={loading}
-                onValueChange={field.onChange}
-                value={field.value}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue
-                      defaultValue={field.value}
-                      placeholder="Selecciona un tipo"
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {types.map((type) => (
-                    <SelectItem
-                      className="cursor-pointer"
-                      key={String(type._id)}
-                      value={String(type._id)}
-                    >
-                      {type.name} - {formatter.format(type.price)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {extras.length > 0 && (
-          <h2 className="text-2xl font-bold tracking-tight">Extras</h2>
+          value={typeId}
+          onChange={(e) => setTypeId(e.target.value)}
+          disabled={pending}
+          aria-invalid={!!typeError}
+          className={selectClassName}
+        >
+          <option value="" disabled>
+            Selecciona un tipo
+          </option>
+          {types.map((type) => (
+            <option key={String(type._id)} value={String(type._id)}>
+              {type.name} - {formatter.format(type.price)}
+            </option>
+          ))}
+        </select>
+        {typeError && (
+          <p className="text-sm font-medium text-destructive">{typeError}</p>
         )}
-        {extras.map((item) => (
-          <FormField
-            key={String(item._id)}
-            control={form.control}
-            name={`quantities.${String(item._id)}`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="w-full flex justify-between">
-                  {item.name}
-                  <span>{formatter.format(item.price)}</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    disabled={loading}
-                    min={0}
-                    placeholder={`Cantidad de ${item.name.toLowerCase()}`}
-                    {...field}
-                    value={field.value as number}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+      </div>
 
-        {decorations.length > 0 && (
-          <h2 className="text-2xl font-bold tracking-tight">Decoraciones</h2>
-        )}
-        {decorations.map((item) => (
-          <FormField
-            key={String(item._id)}
-            control={form.control}
-            name={`quantities.${String(item._id)}`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="w-full flex justify-between">
-                  {item.name}
-                  <span>{formatter.format(item.price)}</span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    disabled={loading}
-                    min={0}
-                    placeholder={`Cantidad de ${item.name.toLowerCase()}`}
-                    {...field}
-                    value={field.value as number}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
+      {extras.length > 0 && (
+        <h2 className="text-2xl font-bold tracking-tight">Extras</h2>
+      )}
+      {extras.map(renderQuantityField)}
 
-        <div className="flex justify-between place-items-center font-semibold text-lg bg-violet-400 rounded-md px-4 py-3">
-          <span>Total</span>
-          <span>{formatter.format(totalPreview)}</span>
-        </div>
+      {decorations.length > 0 && (
+        <h2 className="text-2xl font-bold tracking-tight">Decoraciones</h2>
+      )}
+      {decorations.map(renderQuantityField)}
 
-        <Button disabled={loading} className="w-full" type="submit">
-          Crear orden
-        </Button>
-      </form>
-    </Form>
+      <div className="flex justify-between place-items-center font-semibold text-lg bg-violet-400 rounded-md px-4 py-3">
+        <span>Total</span>
+        <span>{formatter.format(totalPreview)}</span>
+      </div>
+
+      <Button disabled={pending} className="w-full" type="submit">
+        {pending ? "Creando..." : "Crear orden"}
+      </Button>
+    </form>
   );
 }

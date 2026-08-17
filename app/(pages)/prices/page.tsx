@@ -1,5 +1,3 @@
-"use client";
-
 import CardLink from "@/components/card-link";
 import { PricesCards } from "@/constants";
 

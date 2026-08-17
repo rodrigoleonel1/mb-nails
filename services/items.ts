@@ -1,10 +1,25 @@
+import { cacheLife, cacheTag } from "next/cache";
+
 import { connectDB } from "@/lib/mongodb";
 import { Item } from "@/lib/types";
 import ItemModel from "@/models/item";
 
+function serialize<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data));
+}
+
 export async function getItems() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("items");
   await connectDB();
-  return ItemModel.find().lean();
+  const items = await ItemModel.find().lean();
+  return serialize(items);
+}
+
+export async function getItemById(id: string) {
+  await connectDB();
+  return ItemModel.findById(id).lean();
 }
 
 export async function createItem(data: Partial<Item>) {

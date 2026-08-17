@@ -2,6 +2,7 @@ import { Dancing_Script } from "next/font/google";
 import { format } from "date-fns";
 import { notFound } from "next/navigation";
 
+import { deleteOrder } from "@/app/actions";
 import { getOrderById } from "@/services/orders";
 import { formatter } from "@/lib/utils";
 import { Item } from "@/lib/types";
@@ -13,6 +14,8 @@ const dancingScript = Dancing_Script({
   weight: ["400", "700"],
   subsets: ["latin"],
 });
+
+export const instant = false;
 
 export default async function OrderPage({
   params,
@@ -32,7 +35,7 @@ export default async function OrderPage({
         />
         <aside className="flex gap-4">
           <ScreenshotButton id={id} />
-          <DeleteButton id={id} resource="orders" redirectTo="/orders" />
+          <DeleteButton id={id} action={deleteOrder} label="orden" redirectTo="/orders" />
         </aside>
       </header>
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { ExternalLink } from "lucide-react";
 
+import { deleteOrder } from "@/app/actions";
 import { Order } from "@/lib/types";
 import { formatter } from "@/lib/utils";
 import DeleteButton from "@/components/delete-button";
@@ -31,8 +32,9 @@ export default function CardOrder({ order }: CardOrderProps) {
         </Link>
         <DeleteButton
           id={order._id.toString()}
-          resource="orders"
-          refresh={true}
+          action={deleteOrder}
+          label="orden"
+          refresh
         />
       </div>
     </article>
